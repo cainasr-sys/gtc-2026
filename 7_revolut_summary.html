@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revolut: Financial Foundation Model — GTC 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --border: rgba(28,24,18,0.1);
+    --green: #166534;
+    --green-dim: rgba(22,101,52,0.08);
+    --green-border: rgba(22,101,52,0.2);
+    --white: #1c1917;
+    --grey: #57534e;
+    --grey2: #6b6460;
+    --red: #dc2626;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ---- NOISE OVERLAY ---- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  /* ---- HEADER ---- */
+  .header {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 64px;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -10%;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(118,255,58,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header::after {
+    content: 'PRAGMA';
+    position: absolute;
+    right: -20px;
+    bottom: -60px;
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(120px, 18vw, 280px);
+    font-weight: 800;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(22,101,52,0.1);
+    letter-spacing: -10px;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--green-dim);
+    border: 1px solid var(--green-border);
+    color: var(--green);
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 2px;
+    margin-bottom: 40px;
+    width: fit-content;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(42px, 6vw, 90px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -3px;
+    margin-bottom: 12px;
+  }
+
+  .header h1 span { color: var(--green); }
+
+  .header .subtitle {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(16px, 2vw, 22px);
+    color: var(--grey);
+    font-weight: 300;
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .meta-label {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--grey2);
+  }
+
+  .meta-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .nav-dots {
+    position: absolute;
+    right: 64px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nav-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--grey2);
+    transition: background 0.3s, transform 0.3s;
+  }
+
+  .nav-dot.active { background: var(--green); transform: scale(1.5); }
+
+  /* ---- SECTIONS ---- */
+  section {
+    padding: 80px 64px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--green);
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    margin-bottom: 48px;
+  }
+
+  /* ---- PROBLEM SECTION ---- */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .problem-card {
+    background: var(--surface);
+    padding: 32px;
+    position: relative;
+  }
+
+  .problem-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .problem-card p {
+    font-size: 13px;
+    color: var(--grey);
+    line-height: 1.7;
+  }
+
+  .code-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 32px;
+  }
+
+  .tag {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    color: var(--grey);
+    background: var(--surface2);
+  }
+
+  /* ---- VISION: analogy table ---- */
+  .analogy-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 32px;
+  }
+
+  .analogy-table th {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--grey2);
+    padding: 12px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .analogy-table td {
+    padding: 14px 20px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .analogy-table td:first-child {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    width: 160px;
+  }
+
+  .analogy-table td:nth-child(2) { color: var(--grey); }
+  .analogy-table td:nth-child(3) { color: var(--white); }
+
+  .analogy-table tr:hover td { background: var(--surface); }
+
+  .insight-box {
+    background: var(--green-dim);
+    border: 1px solid var(--green-border);
+    padding: 24px 32px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--white);
+    font-style: italic;
+  }
+
+  .insight-box strong { color: var(--green); font-style: normal; }
+
+  /* ---- MODEL SECTION ---- */
+  .model-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 48px;
+  }
+
+  .model-card {
+    background: var(--surface);
+    padding: 32px;
+  }
+
+  .model-card .num {
+    font-family: 'Syne', sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--green);
+    opacity: 0.3;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .model-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .model-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .model-card li {
+    font-size: 13px;
+    color: var(--grey);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .model-card li::before {
+    content: '→';
+    color: var(--green);
+    flex-shrink: 0;
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 12px;
+  }
+
+  /* TOKENIZATION */
+  .token-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .token-card {
+    background: var(--surface2);
+    padding: 24px 20px;
+  }
+
+  .token-card .field-type {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--green);
+    margin-bottom: 10px;
+  }
+
+  .token-card .strategy {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+
+  .token-card .example {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--grey);
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  .token-count {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--white);
+  }
+
+  /* ARCH FLOW */
+  .arch-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 48px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .arch-step {
+    flex-shrink: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 16px 22px;
+    text-align: center;
+    min-width: 110px;
+  }
+
+  .arch-step .step-label {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--grey2);
+    margin-bottom: 6px;
+  }
+
+  .arch-step .step-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .arch-step.highlight {
+    border-color: var(--green-border);
+    background: var(--green-dim);
+  }
+
+  .arch-step.highlight .step-name { color: var(--green); }
+
+  .arch-arrow {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 18px;
+    color: var(--grey2);
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+
+  /* PRETRAIN */
+  .pretrain-example {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 32px;
+    margin-bottom: 32px;
+  }
+
+  .token-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .token-row-label {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--grey2);
+    width: 60px;
+    flex-shrink: 0;
+  }
+
+  .tok {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--white);
+    white-space: nowrap;
+  }
+
+  .tok.masked {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(255,68,68,0.08);
+  }
+
+  .tok.predicted {
+    border-color: var(--green-border);
+    color: var(--green);
+    background: var(--green-dim);
+  }
+
+  /* ---- DEPLOYMENT PATHS ---- */
+  .paths-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 32px;
+  }
+
+  .path-card {
+    background: var(--surface);
+    padding: 36px;
+  }
+
+  .path-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+
+  .path-flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 20px;
+  }
+
+  .pf-step {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    color: var(--grey);
+    white-space: nowrap;
+  }
+
+  .pf-step.key {
+    border-color: var(--green-border);
+    color: var(--green);
+    background: var(--green-dim);
+  }
+
+  .pf-arrow { color: var(--grey2); font-size: 12px; }
+
+  .path-note {
+    font-size: 13px;
+    color: var(--grey);
+    line-height: 1.7;
+  }
+
+  /* ---- RESULTS ---- */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 48px;
+  }
+
+  .result-card {
+    background: var(--surface);
+    padding: 32px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--green);
+    opacity: 0.4;
+  }
+
+  .result-card .task {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--grey2);
+    margin-bottom: 12px;
+  }
+
+  .result-card .uplift {
+    font-family: 'Syne', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--green);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .result-card .metric {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--grey);
+    margin-bottom: 16px;
+  }
+
+  .result-card .desc {
+    font-size: 12px;
+    color: var(--grey);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+
+  .result-card.aml {
+    opacity: 0.5;
+  }
+
+  .result-card.aml .uplift {
+    color: var(--grey2);
+  }
+
+  /* ---- EFFICIENCY ---- */
+  .efficiency-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 48px;
+  }
+
+  .eff-card {
+    background: var(--surface2);
+    padding: 28px 24px;
+    text-align: center;
+  }
+
+  .eff-card .big {
+    font-family: 'Syne', sans-serif;
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--green);
+    margin-bottom: 6px;
+  }
+
+  .eff-card .eff-label {
+    font-size: 12px;
+    color: var(--grey);
+    line-height: 1.5;
+  }
+
+  /* ---- TAKEAWAYS ---- */
+  .takeaways-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+  }
+
+  .tk-card {
+    background: var(--surface);
+    padding: 32px;
+  }
+
+  .tk-card .tk-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 64px;
+    font-weight: 800;
+    color: var(--green);
+    opacity: 0.15;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .tk-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .tk-card p {
+    font-size: 13px;
+    color: var(--grey);
+    line-height: 1.7;
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    padding: 40px 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+  }
+
+  footer .brand {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--grey2);
+    letter-spacing: 0.05em;
+  }
+
+  footer .event {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--grey2);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  /* ---- DATA BOX ---- */
+  .data-bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 48px;
+  }
+
+  .db-item {
+    background: var(--surface2);
+    padding: 20px 16px;
+    text-align: center;
+  }
+
+  .db-item .db-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .db-item .db-label {
+    font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--grey2);
+  }
+
+  /* ---- SCROLLBAR ---- */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--grey2); border-radius: 2px; }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 900px) {
+    .header, section { padding: 60px 32px; }
+    .problem-grid, .model-grid, .token-grid,
+    .paths-grid, .results-grid, .efficiency-row,
+    .takeaways-grid, .data-bar { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .header, section { padding: 48px 24px; }
+    .problem-grid, .model-grid, .paths-grid,
+    .results-grid, .efficiency-row, .takeaways-grid, .data-bar { grid-template-columns: 1fr; }
+    .token-grid { grid-template-columns: 1fr 1fr; }
+    .header::after { display: none; }
+  }
+</style>
+</head>
+<body>
+<nav style="position:sticky;top:0;z-index:1000;background:rgba(245,244,240,0.96);backdrop-filter:blur(16px);border-bottom:1px solid rgba(28,24,18,0.1);height:64px;display:flex;align-items:center;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 32px;display:flex;align-items:center;width:100%;gap:0">
+    <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;margin-right:32px">
+      <div style="width:28px;height:28px;background:#8a6500;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif;font-size:14px;font-weight:700;color:#fff">G</div>
+      <span style="font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1c1917">GTC 2026</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none">
+      <a href="1_evento.html" style="display:block;padding:6px 12px;font-size:12px;color:#57534e;text-decoration:none;border-radius:4px;white-space:nowrap">Evento</a>
+      <a href="2_nvidia.html" style="display:block;padding:6px 12px;font-size:12px;color:#57534e;text-decoration:none;border-radius:4px;white-space:nowrap">NVIDIA: História</a>
+      <a href="3_insight_deck.html" style="display:block;padding:6px 12px;font-size:12px;color:#57534e;text-decoration:none;border-radius:4px;white-space:nowrap">Insight Deck</a>
+      <a href="4_ai_investimentos.html" style="display:block;padding:6px 12px;font-size:12px;color:#57534e;text-decoration:none;border-radius:4px;white-space:nowrap">AI &amp; Investimentos</a>
+      <a href="5_physical_ai.html" style="display:block;padding:6px 12px;font-size:12px;color:#57534e;text-decoration:none;border-radius:4px;white-space:nowrap">Physical AI</a>
+      <a href="6_ia_capital_solutions.html" style="display:block;padding:6px 12px;font-size:12px;color:#57534e;text-decoration:none;border-radius:4px;white-space:nowrap">Capital Solutions</a>
+      <a href="7_revolut_summary.html" style="display:block;padding:6px 12px;font-size:12px;color:#166534;text-decoration:none;border-radius:4px;background:rgba(22,101,52,0.08);white-space:nowrap">Revolut</a>
+      <a href="8_situational_awareness.html" style="display:block;padding:6px 12px;font-size:12px;color:#57534e;text-decoration:none;border-radius:4px;white-space:nowrap">Situational Awareness</a>
+    </div>
+    <div style="font-family:monospace;font-size:10px;color:#57534e;padding:4px 10px;border:1px solid rgba(28,24,18,0.12);border-radius:100px;margin-left:auto;white-space:nowrap;flex-shrink:0">Março 2026</div>
+  </div>
+</nav>
+<div style="background:#eeece7;border-bottom:1px solid rgba(28,24,18,0.1);padding:14px 32px;display:flex;align-items:center;gap:16px">
+  <a href="index.html" style="font-size:12px;color:#57534e;text-decoration:none">← Voltar ao Briefing</a>
+  <div style="width:1px;height:12px;background:rgba(28,24,18,0.15)"></div>
+  <span style="font-family:monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#166534">07 — Revolut</span>
+  <span style="font-size:13px;color:#1c1917;font-family:Inter,sans-serif;font-weight:600">Financial Foundation Model</span>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ HEADER -->
+<header class="header">
+  <div class="badge">Revolut · NVIDIA GTC · Mar 2026</div>
+  <h1>PRAGMA<span>.</span></h1>
+  <p class="subtitle">Pre-trained General Model for Autonomous Representation of Arbitrary customer behavior — o modelo fundacional de transações da Revolut</p>
+  <div class="meta-row">
+    <div class="meta-item">
+      <span class="meta-label">Apresentado por</span>
+      <span class="meta-value">Revolut Data Science</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Dataset</span>
+      <span class="meta-value">850B+ tokens</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Usuários</span>
+      <span class="meta-value">25M+ / 20 países</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Categoria</span>
+      <span class="meta-value">Foundation Model</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════ PROBLEMA -->
+<section id="problema">
+  <div class="section-label">01 / O Problema</div>
+  <h2 class="section-title">ML tradicional em finanças<br>é fundamentalmente quebrado</h2>
+
+  <div class="problem-grid">
+    <div class="problem-card">
+      <h3>Entender o domínio</h3>
+      <p>Meses de coleta de expertise específica por domínio — fraude, crédito, AML e marketing são silos separados com times separados.</p>
+    </div>
+    <div class="problem-card">
+      <h3>Feature engineering manual</h3>
+      <p>Centenas de features hand-crafted por modelo. Semanas ou meses para cada novo projeto. Nenhum reaproveitamento entre domínios.</p>
+    </div>
+    <div class="problem-card">
+      <h3>Validar e manter pipelines</h3>
+      <p>Statistical testing, drift monitoring, ETL jobs, feature stores e versionamento — infraestrutura pesada para cada modelo individualmente.</p>
+    </div>
+    <div class="problem-card">
+      <h3>Zero transferência de conhecimento</h3>
+      <p>O que o modelo de fraude aprende não ajuda o modelo de crédito. Inconsistência em definições de features semanticamente idênticas.</p>
+    </div>
+  </div>
+
+  <p style="font-size: 13px; color: var(--grey); margin-bottom: 16px;">Exemplos de features típicas construídas manualmente:</p>
+  <div class="code-tags">
+    <span class="tag">count_transactions_last_7d</span>
+    <span class="tag">ratio_international_txn</span>
+    <span class="tag">std_amount_by_hour_of_day</span>
+    <span class="tag">avg_amount_merchant_category_30d</span>
+    <span class="tag">time_since_last_txn_seconds</span>
+    <span class="tag">unique_merchants_90d</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ VISÃO -->
+<section id="visao">
+  <div class="section-label">02 / A Visão</div>
+  <h2 class="section-title">Transações são<br>como linguagem</h2>
+
+  <table class="analogy-table">
+    <thead>
+      <tr>
+        <th>Propriedade</th>
+        <th>Linguagem natural</th>
+        <th>Transações financeiras</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Sequential</td>
+        <td>Palavras em sentenças</td>
+        <td>Transações ordenadas no tempo</td>
+      </tr>
+      <tr>
+        <td>Contextual</td>
+        <td>Significado vem das palavras vizinhas</td>
+        <td>Comportamento emerge das transações vizinhas</td>
+      </tr>
+      <tr>
+        <td>Patterns</td>
+        <td>Gramática, idiomas, estilo</td>
+        <td>Ritmos de gasto, hábitos de consumo</td>
+      </tr>
+      <tr>
+        <td>Anomalies</td>
+        <td>Erros gramaticais, typos</td>
+        <td>Atividade fraudulenta ou incomum</td>
+      </tr>
+      <tr>
+        <td>Long-range deps</td>
+        <td>Coerência no nível do documento</td>
+        <td>Padrões sazonais, life events</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="insight-box">
+    Se o <strong>masked language modeling</strong> (BERT) consegue aprender representações universais de linguagem, <strong>masked transaction modeling</strong> pode aprender representações universais de <strong>comportamento financeiro</strong> — sem nenhum label supervisionado.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ MODELO -->
+<section id="modelo">
+  <div class="section-label">03 / O Modelo & Dados</div>
+  <h2 class="section-title">Um único modelo treinado<br>em toda a base de transações</h2>
+
+  <div class="data-bar">
+    <div class="db-item">
+      <div class="db-val">25M+</div>
+      <div class="db-label">Usuários</div>
+    </div>
+    <div class="db-item">
+      <div class="db-val">20+</div>
+      <div class="db-label">Países</div>
+    </div>
+    <div class="db-item">
+      <div class="db-val">40B+</div>
+      <div class="db-label">Eventos</div>
+    </div>
+    <div class="db-item">
+      <div class="db-val">850B+</div>
+      <div class="db-label">Tokens</div>
+    </div>
+    <div class="db-item">
+      <div class="db-val">1.5Y</div>
+      <div class="db-label">Histórico</div>
+    </div>
+  </div>
+
+  <p style="font-size: 13px; color: var(--grey); margin-bottom: 20px; text-transform: uppercase; font-family: 'IBM Plex Mono', 'DM Mono', monospace; letter-spacing: 0.1em; font-size: 10px;">Estratégia de Tokenização — ~28k tokens totais</p>
+
+  <div class="token-grid">
+    <div class="token-card">
+      <div class="field-type">Categórico</div>
+      <div class="strategy">Vocabulary Lookup + UNK</div>
+      <div class="example">grocery_stores<br>→ mcc_grocery</div>
+      <div class="token-count">1.8k</div>
+      <div class="db-label">categorias</div>
+    </div>
+    <div class="token-card">
+      <div class="field-type">Contínuo</div>
+      <div class="strategy">Quantile-based bucketing</div>
+      <div class="example">42.50<br>→ amount_q045</div>
+      <div class="token-count">1.1k</div>
+      <div class="db-label">quantis</div>
+    </div>
+    <div class="token-card">
+      <div class="field-type">DateTime</div>
+      <div class="strategy">Temporal decomposition</div>
+      <div class="example">14:23 Fri<br>→ hour_14, dow_fri</div>
+      <div class="token-count">62</div>
+      <div class="db-label">tokens de tempo</div>
+    </div>
+    <div class="token-card">
+      <div class="field-type">Texto</div>
+      <div class="strategy">Byte-pair Encoding (BPE) via NVIDIA Nemotron-1b-v2</div>
+      <div class="example">"https://apple.com"<br>→ "https://" + "apple"</div>
+      <div class="token-count">25k</div>
+      <div class="db-label">tokens BPE</div>
+    </div>
+  </div>
+
+  <p style="font-size: 13px; color: var(--grey); margin-bottom: 20px; text-transform: uppercase; font-family: 'IBM Plex Mono', 'DM Mono', monospace; letter-spacing: 0.1em; font-size: 10px; margin-top: 40px;">Pré-treinamento — Masked Attribute Reconstruction (inspirado em BERT)</p>
+
+  <div class="pretrain-example">
+    <div class="token-row">
+      <span class="token-row-label">Original</span>
+      <span class="tok">card_payment</span>
+      <span class="tok">amount_q045</span>
+      <span class="tok">mcc_grocery</span>
+      <span class="tok">hour_14</span>
+      <span class="tok">dow_fri</span>
+    </div>
+    <div class="token-row">
+      <span class="token-row-label">Mascarado</span>
+      <span class="tok">card_payment</span>
+      <span class="tok masked">[MASK]</span>
+      <span class="tok">mcc_grocery</span>
+      <span class="tok masked">[MASK]</span>
+      <span class="tok">dow_fri</span>
+    </div>
+    <div class="token-row">
+      <span class="token-row-label">Prediz</span>
+      <span style="width: 60px; flex-shrink:0;"></span>
+      <span class="tok predicted">^amount_q045</span>
+      <span style="flex:1"></span>
+      <span class="tok predicted">^hour_14</span>
+    </div>
+    <p style="font-size: 12px; color: var(--grey); margin-top: 20px; font-style: italic;">O modelo aprende: "Se é uma sexta-feira à tarde comprando no supermercado, o valor deve estar na faixa X" — sem nenhum label supervisionado.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ ARQUITETURA -->
+<section id="arquitetura">
+  <div class="section-label">04 / Arquitetura</div>
+  <h2 class="section-title">PRAGMA — Componentes<br>& Deployment</h2>
+
+  <div class="arch-flow">
+    <div class="arch-step">
+      <div class="step-label">Dados brutos</div>
+      <div class="step-name">Raw Events</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-step highlight">
+      <div class="step-label">Etapa crítica</div>
+      <div class="step-name">Tokenise</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-step">
+      <div class="step-label">Encoder USR</div>
+      <div class="step-name">User attributes + Time RoPE</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-step">
+      <div class="step-label">Encoder TRX</div>
+      <div class="step-name">Transaction sequences</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-step highlight">
+      <div class="step-label">Saída</div>
+      <div class="step-name">Universal Embeddings</div>
+    </div>
+  </div>
+
+  <div class="model-grid">
+    <div class="model-card">
+      <div class="num">S</div>
+      <h3>PRAGMA-Small</h3>
+      <ul>
+        <li>Menor número de parâmetros</li>
+        <li>Latência crítica — abaixo de 2s</li>
+        <li>Ideal para fraude em tempo real</li>
+      </ul>
+    </div>
+    <div class="model-card">
+      <div class="num">M</div>
+      <h3>PRAGMA-Medium</h3>
+      <ul>
+        <li>Balanço qualidade/latência</li>
+        <li>Uso geral — crédito, AML, cross-sell</li>
+        <li>Deploy mais versátil</li>
+      </ul>
+    </div>
+    <div class="model-card">
+      <div class="num">L</div>
+      <h3>PRAGMA-Large</h3>
+      <ul>
+        <li>Máxima performance</li>
+        <li>Casos onde latência não é crítica</li>
+        <li>Batch processing e análises profundas</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="paths-grid">
+    <div class="path-card">
+      <h3>Path 1 — Embeddings como Features</h3>
+      <div class="path-flow">
+        <span class="pf-step">Sequence</span>
+        <span class="pf-arrow">→</span>
+        <span class="pf-step key">Frozen PRAGMA</span>
+        <span class="pf-arrow">→</span>
+        <span class="pf-step">Embeddings</span>
+        <span class="pf-arrow">→</span>
+        <span class="pf-step">Boosting probe</span>
+        <span class="pf-arrow">→</span>
+        <span class="pf-step">Prediction</span>
+      </div>
+      <p class="path-note">PRAGMA congelado. Qualquer modelo downstream pode usar os embeddings como input. Deploy mais rápido — sem retreino do foundation model.</p>
+    </div>
+    <div class="path-card">
+      <h3>Path 2 — Fine-tuning com LoRA</h3>
+      <div class="path-flow">
+        <span class="pf-step">Sequence</span>
+        <span class="pf-arrow">→</span>
+        <span class="pf-step key">PRAGMA + LoRA adapters</span>
+        <span class="pf-arrow">→</span>
+        <span class="pf-step">Prediction</span>
+      </div>
+      <p class="path-note">Apenas ~1-2% dos parâmetros treináveis. Um modelo base + N adapters LoRA pequenos = N modelos especializados, com baixo custo e sem catastrophic forgetting.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ RESULTADOS -->
+<section id="resultados">
+  <div class="section-label">05 / Resultados</div>
+  <h2 class="section-title">Performance vs.<br>baseline de produção</h2>
+
+  <div class="results-grid">
+    <div class="result-card">
+      <div class="task">Fraud Detection</div>
+      <div class="uplift">+59%</div>
+      <div class="metric">Recall</div>
+      <div class="desc">Identificação em tempo real de transações fraudulentas. Proteção direta ao cliente com muito menos falsos negativos.</div>
+    </div>
+    <div class="result-card">
+      <div class="task">Credit Risk</div>
+      <div class="uplift">+118%</div>
+      <div class="metric">PRAUC</div>
+      <div class="desc">Avaliação de crédito para população thin-file — jovens sem histórico em bureaus. O modelo dobrou a precision-recall area under curve.</div>
+    </div>
+    <div class="result-card">
+      <div class="task">Cross-sell</div>
+      <div class="uplift">+9.85%</div>
+      <div class="metric">mAP</div>
+      <div class="desc">Recomendação de produtos financeiros relevantes. Melhoria consistente no ranking de produtos adequados por usuário.</div>
+    </div>
+    <div class="result-card">
+      <div class="task">Recurrent Transactions</div>
+      <div class="uplift">+5.76%</div>
+      <div class="metric">F1 Macro</div>
+      <div class="desc">Predição de padrões de pagamento recorrentes — boletos, assinaturas, salários. Melhora customer insights e planejamento.</div>
+    </div>
+    <div class="result-card">
+      <div class="task">Credits Engagement Comms</div>
+      <div class="uplift">+163%</div>
+      <div class="metric">AUUC</div>
+      <div class="desc">Seleção do melhor canal e momento para comunicar sobre aplicações de crédito iniciadas mas não completadas. Impacto direto em receita.</div>
+    </div>
+    <div class="result-card aml">
+      <div class="task">Anti-Money Laundering</div>
+      <div class="uplift">—</div>
+      <div class="metric">Resultados inconclusivos</div>
+      <div class="desc">Hipótese: AML requer interações usuário-a-usuário (redes de lavagem) que o modelo ainda não captura. Próxima fronteira de melhoria.</div>
+    </div>
+  </div>
+
+  <p style="font-size: 10px; font-family: 'IBM Plex Mono', 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.12em; color: var(--grey2); margin-bottom: 20px;">Ganhos de eficiência operacional</p>
+
+  <div class="efficiency-row">
+    <div class="eff-card">
+      <div class="big">3–5×</div>
+      <div class="eff-label">Ciclo de desenvolvimento de modelos mais rápido</div>
+    </div>
+    <div class="eff-card">
+      <div class="big">∼0</div>
+      <div class="eff-label">Feature engineering manual necessário</div>
+    </div>
+    <div class="eff-card">
+      <div class="big">1</div>
+      <div class="eff-label">Conjunto de embeddings para todos os casos de uso</div>
+    </div>
+    <div class="eff-card">
+      <div class="big">N</div>
+      <div class="eff-label">Tarefas especializadas via LoRA adapters leves</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ TAKEAWAYS -->
+<section id="takeaways">
+  <div class="section-label">06 / Key Takeaways</div>
+  <h2 class="section-title">O que levar<br>daqui</h2>
+
+  <div class="takeaways-grid">
+    <div class="tk-card">
+      <div class="tk-num">01</div>
+      <h3>Transações são sequências</h3>
+      <p>A analogia com NLP é profunda e válida — as mesmas propriedades estruturais que tornam o BERT poderoso para texto valem para histórico transacional.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-num">02</div>
+      <h3>Tokenização é crítica</h3>
+      <p>Como você converte os dados brutos em tokens discretos determina o teto de performance do modelo. A escolha do BPE para texto via Nemotron foi um diferencial mensurável.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-num">03</div>
+      <h3>Pré-treinamento auto-supervisionado</h3>
+      <p>Bilhões de transações sem qualquer label são suficientes para aprender representações comportamentais ricas — o modelo aprende o que importa sozinho.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-num">04</div>
+      <h3>Dois caminhos de deployment</h3>
+      <p>Embeddings como features (rápido, flexível) ou fine-tuning com LoRA (mais performance, ainda eficiente). A escolha depende do caso de uso e exigência de latência.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-num">05</div>
+      <h3>Ganhos massivos de eficiência</h3>
+      <p>O verdadeiro ROI não é apenas na performance dos modelos — é na eliminação de semanas/meses de feature engineering por cada novo projeto de ML.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-num">06</div>
+      <h3>Um modelo, muitas tarefas</h3>
+      <p>Fraude, crédito, AML, cross-sell e comunicação se beneficiam das mesmas representações aprendidas. Padrões de fraude informam modelos de crédito, e vice-versa.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ FOOTER -->
+<footer>
+  <span class="brand">Revolut · PRAGMA</span>
+  <span class="event">NVIDIA GTC · San Jose · March 2026</span>
+</footer>
+
+
+<div style="background:#eeece7;border-top:1px solid rgba(28,24,18,0.1);padding:24px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+  <div style="font-family:Inter,sans-serif;font-size:13px;color:#57534e">GTC 2026 — Intelligence Briefing</div>
+  <div style="display:flex;gap:20px">
+    <a href="6_ia_capital_solutions.html" style="font-size:12px;color:#57534e;text-decoration:none">← Capital Solutions</a>
+    <a href="8_situational_awareness.html" style="font-size:12px;color:#57534e;text-decoration:none">Situational Awareness →</a>
+  </div>
+  <div style="font-family:monospace;font-size:10px;color:#a8a29e">Março 2026 · Material Confidencial</div>
+</div>
+</body>
+</html>

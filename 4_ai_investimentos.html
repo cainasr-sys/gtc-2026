@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI &amp; Investimentos — GTC 2026</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .prose-wide { max-width: 860px; }
+    .prose-wide p { margin-bottom:16px; color:var(--muted); line-height:1.75; }
+    .prose-wide ul { padding-left:24px; margin-bottom:16px; display:flex; flex-direction:column; gap:7px; }
+    .prose-wide li { color:var(--muted); line-height:1.65; }
+    .sub-heading { font-family:var(--font-display); font-size:18px; font-weight:600; color:var(--gold2); margin:28px 0 10px; }
+    .sub-sub-heading { font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--white); margin:20px 0 8px; }
+    .section-block { margin-bottom:48px; }
+
+    .perspectives-nav {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+    }
+    .persp-btn {
+      flex: 1;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-body);
+    }
+    .persp-btn.active, .persp-btn:hover {
+      background: var(--surface2);
+      color: var(--gold);
+    }
+
+    .convergence-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 24px 0; }
+    .convergence-table th { text-align:left; padding:10px 14px; font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--border2); background:var(--surface); }
+    .convergence-table td { padding:11px 14px; color:var(--muted); border-bottom:1px solid var(--border); vertical-align:top; line-height:1.5; }
+    .convergence-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .badge-green { display:inline-block; padding:2px 8px; border-radius:100px; font-size:10px; font-weight:600; background:rgba(118,212,148,0.12); color:#76d494; border:1px solid rgba(118,212,148,0.25); }
+    .badge-red { display:inline-block; padding:2px 8px; border-radius:100px; font-size:10px; font-weight:600; background:rgba(232,64,64,0.1); color:#e87070; border:1px solid rgba(232,64,64,0.2); }
+    .badge-gold { display:inline-block; padding:2px 8px; border-radius:100px; font-size:10px; font-weight:600; background:var(--gold-dim); color:var(--gold2); border:1px solid var(--gold-border); }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-mark">G</div>
+      <span class="nav-logo-text">GTC 2026</span>
+    </a>
+    <div class="nav-links">
+      <a href="1_evento.html" class="nav-link">Evento</a>
+      <a href="2_nvidia.html" class="nav-link">NVIDIA: História</a>
+      <a href="3_insight_deck.html" class="nav-link">Insight Deck</a>
+      <a href="4_ai_investimentos.html" class="nav-link active">AI &amp; Investimentos</a>
+      <a href="5_physical_ai.html" class="nav-link">Physical AI</a>
+      <a href="6_ia_capital_solutions.html" class="nav-link">Capital Solutions</a>
+      <a href="7_revolut_summary.html" class="nav-link">Revolut</a>
+      <a href="8_situational_awareness.html" class="nav-link">Situational Awareness</a>
+    </div>
+    <div class="nav-tag">Março 2026</div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <a href="index.html" class="back-link">Voltar ao Briefing</a>
+    <div class="page-eyebrow">04 — AI &amp; Investimentos</div>
+    <h1 class="page-title">Três Perspectivas sobre a Transformação em Curso</h1>
+    <p class="page-subtitle">Insight Partners, Howard Marks, Brookfield, NVIDIA e o Colapso do Terminal Value — onde os maiores investidores convergem e divergem sobre AI, infraestrutura e precificação de ativos.</p>
+  </div>
+</div>
+
+<main class="page-main">
+
+  <!-- KEY STATS -->
+  <div class="stat-grid fade-in">
+    <div class="stat-block">
+      <div class="stat-value">$90B</div>
+      <div class="stat-label">AUM da Insight Partners — 30 anos de software investing</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-value">$15T+</div>
+      <div class="stat-label">TAM da era AI — vs. $650B do software atual</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-value">80%</div>
+      <div class="stat-label">SWE-bench já resolvido — engenharia de software quase "dominada"</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-value">125bps</div>
+      <div class="stat-label">Prêmio de iliquidez do crédito privado — Howard Marks: não mais suficiente</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- PERSPECTIVE I: INSIGHT PARTNERS -->
+  <div class="section-block">
+    <div class="page-eyebrow" style="margin-bottom:16px">Perspectiva I</div>
+    <h2 class="section-title">Insight Partners: A Tese de AI Agents</h2>
+    <p class="section-subtitle">George Mathew | Managing Director, AI &amp; Data — $90B AUM, 550+ investimentos ativos</p>
+
+    <div class="prose-wide">
+      <h3 class="sub-heading">Por que este momento é diferente</h3>
+      <p>O framework de Leopold Aschenbrenner (Situational Awareness) guia a tese: estamos na inflexão para <em>Automated AI Researcher → Superintelligence → Cognitive Labor → Science → Robots → Military Edge → GDP</em>. Essa é uma mudança geracional, não cíclica.</p>
+
+      <p>Três dados de capacidade sustentam essa visão:</p>
+      <ul>
+        <li><strong>Benchmarks de R&amp;D (Epoch AI):</strong> SWE-bench de engenharia de software já ~80%. Biology e Mathematics em trajetória de serem "resolvidos" até 2030.</li>
+        <li><strong>Task length de LLMs (METR):</strong> Claude Opus 4.5 e GPT-5 já completam tarefas de software de 5–6 horas com 50% de taxa de sucesso. Em 2020, esse número era de minutos.</li>
+        <li><strong>RL como próxima fronteira:</strong> A proporção de RL compute versus pre-training cresce de zero em GPT-4o até dominante em GPT-n. A task evolui de "encontrar um fato (5 min)" para "completar o trabalho de um FTE em 1 dia".</li>
+      </ul>
+
+      <h3 class="sub-heading">Mercado &amp; Valuation</h3>
+      <p>SaaS multiples voltaram à média de 20 anos. EV/FTM Revenue: pico de ~20× em nov/2020, colapso para ~4–6× em 2022–2023, estabilização próxima à média histórica. O mercado corrigiu o excesso, mas não está barato.</p>
+      <p>O evento de setembro 2025 foi anotado como <strong>"2026 SaaS Selloff"</strong> — AI passou de tailwind para ameaça existencial de desintermediação do SaaS tradicional.</p>
+
+      <h3 class="sub-heading">O Custo da Inteligência em Queda Livre</h3>
+      <p>As três curvas de preço (OpenAI, Anthropic, Gemini) são todas downward-sloping — mais inteligência por menos dólar, driven by open source e destilação. A implicação: o custo de construir um produto de AI está em queda livre, mas também o custo de um concorrente te replicar.</p>
+
+      <h3 class="sub-heading">Expansão do TAM</h3>
+    </div>
+
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin:24px 0">
+      <div class="stat-block">
+        <div class="stat-value" style="font-size:24px">$650B</div>
+        <div class="stat-label">Software Market Atual</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-value" style="font-size:24px">$3.4T</div>
+        <div class="stat-label">Era Cloud &amp; Mobile</div>
+      </div>
+      <div class="stat-block" style="border-color:var(--gold-border)">
+        <div class="stat-value" style="font-size:24px">$15T+</div>
+        <div class="stat-label">Era AI — inclui Business Services e Labor Markets</div>
+      </div>
+    </div>
+
+    <div class="prose-wide">
+      <p>A expansão não é apenas crescimento de software — é a <strong>absorção do mercado de Business Services e do mercado de Labor &amp; Future of Work</strong>. AI não compete apenas com outros softwares; compete com o custo do trabalho humano em escala.</p>
+
+      <h3 class="sub-heading">A Ascensão dos Agentes (2025)</h3>
+      <p>O que mudou para tornar isso possível:</p>
+      <ul>
+        <li>Melhor raciocínio e inferência longa</li>
+        <li>Model diversity: GPT-5, DeepSeek r3, Gemini 2, Claude 4, Grok 3, Llama 4</li>
+        <li>Outcomes vs. Cost-Plus pricing — cobrança por resultado entregue, não por token</li>
+        <li>GPT-4 1000× mais barato via open models e destilação</li>
+        <li>10× Inference Speed: de 30 tok/s para 1.000+ tok/s</li>
+        <li>RL Finetuning (DPO, GRPO); MCP, Sandboxes, browsers, RAG, memória persistente</li>
+      </ul>
+      <p><strong>Use cases reais em 2025 (CrewAI data):</strong> Back Office Automation 10%, Coding &amp; Dev 9%, Marketing Automation 9%, Research &amp; Reports 8%, Software 8%, Tech Support 7%.</p>
+
+      <h3 class="sub-heading">Novo Threat Landscape</h3>
+      <ul>
+        <li>+218% de aumento em ataques AI-driven atribuídos a atores de estado-nação em 2024</li>
+        <li>73% das enterprises sofreram ao menos uma breach AI-related em 2024</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- PERSPECTIVE II: INVESTOR CONVERGENCE -->
+  <div class="section-block">
+    <div class="page-eyebrow" style="margin-bottom:16px">Perspectiva II</div>
+    <h2 class="section-title">Síntese: Onde os Grandes Investidores Convergem e Divergem</h2>
+    <p class="section-subtitle">Howard Marks, Brookfield, NVIDIA, Cisco, CoreWeave, GIP/BlackRock</p>
+
+    <table class="convergence-table">
+      <thead>
+        <tr>
+          <th>Tema</th>
+          <th>Consenso</th>
+          <th>Divergência</th>
+          <th>Sinal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Infraestrutura AI</strong></td>
+          <td>Demanda real, não especulativa. Power como bottleneck principal.</td>
+          <td>Velocidade de retorno: NVIDIA vê ROI imediato; Howard Marks pede cautela sobre timing</td>
+          <td><span class="badge-green">Convergência Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>Private Credit</strong></td>
+          <td>Boom foi real. Ciclo está maduro.</td>
+          <td>Howard Marks: "especialidade desapareceu". Brookfield: ainda há valor em infraestrutura</td>
+          <td><span class="badge-red">Cautela</span></td>
+        </tr>
+        <tr>
+          <td><strong>Valuation de AI</strong></td>
+          <td>AI não é bolha de tecnologia clássica — é mudança estrutural</td>
+          <td>Marks preocupado com credulidade. Insight Partners: SaaS multiples já corrigiram</td>
+          <td><span class="badge-gold">Debate Ativo</span></td>
+        </tr>
+        <tr>
+          <td><strong>Physical AI</strong></td>
+          <td>Próxima grande fronteira. $50–70T de mercado endereçável</td>
+          <td>Timeline: NVIDIA diz 2–3 anos; Physical Intelligence diz 5+ anos para escala</td>
+          <td><span class="badge-green">Convergência Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>Open vs. Closed Models</strong></td>
+          <td>Ambos necessários. Open source fechando gap rapidamente</td>
+          <td>Labs apostam em monolitos; Karpathy (ex-OpenAI) advoga por especiação</td>
+          <td><span class="badge-gold">Debate Ativo</span></td>
+        </tr>
+        <tr>
+          <td><strong>Crédito &amp; Ciclos</strong></td>
+          <td>17 anos de condições benignas criaram complacência</td>
+          <td>Marks: "maré vai baixar"; Brookfield: assets de qualidade resistem aos ciclos</td>
+          <td><span class="badge-red">Cautela</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pullquote" style="margin-top:32px">
+      <p>"Only when the tide goes out do you discover who's been swimming naked."</p>
+      <cite>— Warren Buffett, citado por Howard Marks sobre o mercado de crédito privado</cite>
+    </div>
+
+    <div class="card-grid" style="margin-top:32px">
+      <div class="card">
+        <div class="card-label">Howard Marks — Oaktree</div>
+        <div class="card-title">Cautela, Liquidez e Preparação</div>
+        <div class="card-body">AI não é bolha, mas suas implicações são subestimadas. Private credit perdeu a "especialidade". Spreads de sub-investment grade na mínima histórica. Manter ativos líquidos e preparar-se para agir quando houver capitulação — como em 2008.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Brookfield Asset Management</div>
+        <div class="card-title">Infraestrutura como Alpha</div>
+        <div class="card-body">50% dos ativos investíveis hoje não existiam 20 anos atrás. Data centers, power, fibra — o backbone de uma economia digitalizante. AI de fábrica (30% de redução de custo em baterias automotivas) mostra onde o valor real está sendo criado.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">NVIDIA / Jensen Huang</div>
+        <div class="card-title">Compute = Receita = GDP</div>
+        <div class="card-body">A empresa que controla o compute controla o futuro. Tokens por watt como métrica de competitividade nacional. O setor de IT de $2T se transforma em economia agentic de $8T. AI é a nova eletricidade — e NVIDIA é a usina.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- PERSPECTIVE III: TERMINAL VALUE -->
+  <div class="section-block">
+    <div class="page-eyebrow" style="margin-bottom:16px">Perspectiva III</div>
+    <h2 class="section-title">O Colapso do Terminal Value</h2>
+    <p class="section-subtitle">Como a AI pode alterar o próprio mecanismo de precificação que financia a disrupção</p>
+
+    <div class="prose-wide">
+      <p>O Terminal Value (TV) em modelos de DCF geralmente representa 60–80% do valor de uma empresa. Ele assume que a empresa existe perpetuamente com um crescimento estável. Mas a AI — ao comprimir ciclos competitivos, tornar modelos de negócio obsoletos em meses e democratizar acesso a capacidades antes raras — desafia exatamente essa premissa de perpetuidade.</p>
+
+      <h3 class="sub-heading">A Dinâmica Disruptiva</h3>
+      <p>Se qualquer empresa pode ser replicada em meses por uma startup com acesso a LLMs, o prêmio de durabilidade que sustenta o Terminal Value colapsa. Isso não afeta apenas empresas específicas — afeta a <em>arquitetura dos mercados de capital</em> que precifica esses fluxos futuros.</p>
+
+      <div class="highlight-box">
+        <h3>O Paradoxo do Financiamento da Disrupção</h3>
+        <p style="color:var(--muted);font-size:14px;line-height:1.7">As empresas de AI são financiadas por mercados que dependem de Terminal Values estáveis. Mas essas mesmas empresas de AI estão destruindo a estabilidade que torna esses Terminal Values válidos. Quem financia a disrupção está, em algum nível, financiando a erosão do próprio mecanismo de precificação que usa para valorar os ativos.</p>
+      </div>
+
+      <h3 class="sub-heading">Implicações para Investidores</h3>
+      <ul>
+        <li><strong>Encurtar o horizonte de previsão:</strong> Dar menos peso ao Terminal Value e mais às perspectivas de fluxo de caixa de 3–5 anos verificáveis</li>
+        <li><strong>Privilegiar ativos com moats físicos:</strong> Infraestrutura (power, land, fiber) é mais durável que vantagens de software que podem ser replicadas via AI</li>
+        <li><strong>Atenção ao pricing de risco:</strong> O mercado está precificando perpetuidade para empresas cuja longevidade é incerta — exatamente como Marks alerta sobre os spreads de crédito</li>
+        <li><strong>Equity over fixed income para AI:</strong> Se uma empresa pode ser disruptada, não empreste para ela — participe do upside via equity ou fique fora</li>
+      </ul>
+    </div>
+
+    <div class="pullquote">
+      <p>"Investing in AI or tech companies with fundamental uncertainty? Seek equity upside rather than fixed income returns."</p>
+      <cite>— Howard Marks, Oaktree Capital</cite>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">GTC 2026 — Intelligence Briefing</div>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="3_insight_deck.html">← Insight Deck</a></li>
+      <li><a href="5_physical_ai.html">Physical AI →</a></li>
+    </ul>
+    <div class="footer-note">Março 2026 · Material Confidencial</div>
+  </div>
+</footer>
+
+<script src="assets/nav.js"></script>
+</body>
+</html>

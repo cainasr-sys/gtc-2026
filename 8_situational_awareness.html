@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Situational Awareness — GTC 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --ink: #111008;
+    --paper: #f5f0e8;
+    --cream: #ede8da;
+    --accent: #c8102e;
+    --rule: #111008;
+    --mid: #4a4540;
+    --light-ink: #8a857d;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 20px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE TEXTURE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ─── MASTHEAD / COVER ─── */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    position: relative;
+    border-bottom: 3px double var(--ink);
+    text-align: center;
+  }
+
+  .cover-top-rule {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .cover-top-rule::before,
+  .cover-top-rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--ink);
+  }
+  .cover-top-rule span {
+    font-family: 'EB Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  .dateline {
+    font-family: 'EB Garamond', serif;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.1s forwards;
+  }
+
+  .masthead-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(68px, 10vw, 128px);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.2s forwards;
+  }
+
+  .masthead-title em {
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .masthead-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px, 2.8vw, 30px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--mid);
+    margin-top: 20px;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.4s forwards;
+  }
+
+  .cover-ornament {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.5s forwards;
+  }
+
+  /* Monocle SVG — New Yorker-ish dandy icon */
+  .cover-illustration {
+    width: 240px;
+    height: 240px;
+    margin: 0 auto 48px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .cover-deck {
+    max-width: 580px;
+    font-family: 'EB Garamond', serif;
+    font-size: 21px;
+    line-height: 1.7;
+    color: var(--mid);
+    margin-bottom: 56px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.6s forwards;
+  }
+
+  .cover-nav {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--ink);
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  .cover-nav a {
+    font-family: 'EB Garamond', serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--ink);
+    padding: 12px 28px;
+    border-right: 1px solid var(--ink);
+    transition: background 0.2s, color 0.2s;
+  }
+  .cover-nav a:last-child { border-right: none; }
+  .cover-nav a:hover { background: var(--ink); color: var(--paper); }
+
+  /* ─── SECTION LAYOUT ─── */
+  .section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 80px 40px;
+  }
+
+  .section + .section {
+    border-top: 1px solid var(--ink);
+  }
+
+  .section-label {
+    font-family: 'EB Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--light-ink);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--cream);
+    border-bottom: 1px solid #ccc5b5;
+  }
+
+  .section-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+  }
+
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: clamp(40px, 5.5vw, 64px);
+    line-height: 1.05;
+    margin-bottom: 32px;
+    color: var(--ink);
+  }
+
+  h2 em {
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .intro-text {
+    font-size: 22px;
+    line-height: 1.75;
+    color: var(--mid);
+    max-width: 680px;
+    margin-bottom: 48px;
+  }
+
+  .drop-cap::first-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 5.2em;
+    font-weight: 700;
+    float: left;
+    line-height: 0.78;
+    margin-right: 10px;
+    margin-top: 8px;
+    color: var(--ink);
+  }
+
+  /* ─── TIMELINE ─── */
+  .timeline {
+    position: relative;
+    padding-left: 0;
+  }
+
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 100px 1px 1fr;
+    gap: 0 32px;
+    margin-bottom: 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .timeline-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .timeline-year {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    color: var(--accent);
+    text-align: right;
+    padding-top: 28px;
+    padding-bottom: 28px;
+  }
+
+  .timeline-line {
+    position: relative;
+    background: #ccc5b5;
+    width: 1px;
+  }
+
+  .timeline-line::before {
+    content: '';
+    position: absolute;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 2px solid var(--ink);
+    background: var(--paper);
+  }
+
+  .timeline-content {
+    padding: 24px 0 24px 0;
+    border-bottom: 1px solid #ddd8cc;
+  }
+
+  .timeline-item:last-child .timeline-content {
+    border-bottom: none;
+  }
+
+  .timeline-content h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 25px;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .timeline-content p {
+    font-size: 18px;
+    color: var(--mid);
+    line-height: 1.65;
+  }
+
+  /* ─── CARDS / STATUS ─── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0;
+    border: 1px solid var(--ink);
+    margin-top: 48px;
+  }
+
+  .card {
+    padding: 36px 32px;
+    border-right: 1px solid var(--ink);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s ease, transform 0.5s ease, background 0.2s;
+  }
+
+  .card:last-child { border-right: none; }
+  .card:hover { background: var(--cream); }
+
+  .card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .card-icon {
+    font-size: 31px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .card-body {
+    font-size: 17px;
+    color: var(--mid);
+    line-height: 1.65;
+  }
+
+  /* ─── PULL QUOTE ─── */
+  .pull-quote {
+    border-top: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+    padding: 40px 0;
+    margin: 56px 0;
+    text-align: center;
+  }
+
+  .pull-quote blockquote {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(28px, 4vw, 43px);
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--ink);
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .pull-quote cite {
+    display: block;
+    font-family: 'EB Garamond', serif;
+    font-style: normal;
+    font-size: 15px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--light-ink);
+    margin-top: 20px;
+  }
+
+  /* ─── PERSPECTIVES / OUTLOOK ─── */
+  .outlook-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-top: 48px;
+  }
+
+  @media (max-width: 680px) {
+    .outlook-grid { grid-template-columns: 1fr; gap: 32px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .cover-nav { flex-wrap: wrap; }
+    .timeline-item { grid-template-columns: 72px 1px 1fr; gap: 0 20px; }
+  }
+
+  .outlook-item {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .outlook-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .outlook-tag {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+    font-family: 'EB Garamond', serif;
+  }
+
+  .outlook-item h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 27px;
+    font-weight: 600;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  .outlook-item p {
+    font-size: 18px;
+    color: var(--mid);
+    line-height: 1.7;
+  }
+
+  /* ─── STAT ROW ─── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--ink);
+    margin: 48px 0;
+  }
+
+  @media (max-width: 600px) {
+    .stat-row { grid-template-columns: 1fr; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--ink); }
+    .stat-item:last-child { border-bottom: none; }
+  }
+
+  .stat-item {
+    padding: 32px 28px;
+    border-right: 1px solid var(--ink);
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  .stat-item:last-child { border-right: none; }
+  .stat-item.visible { opacity: 1; }
+
+  .stat-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--ink);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--light-ink);
+    margin-top: 8px;
+    display: block;
+    font-family: 'EB Garamond', serif;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 3px double var(--ink);
+    padding: 40px;
+    text-align: center;
+  }
+
+  .footer-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 31px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+
+  .footer-meta {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--light-ink);
+  }
+
+  .footer-rule {
+    width: 60px;
+    height: 1px;
+    background: var(--ink);
+    margin: 20px auto;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── FOUNDATIONS ─── */
+  .foundations-wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 80px 40px;
+    border-top: 1px solid var(--ink);
+  }
+
+  .foundation-block {
+    display: grid;
+    grid-template-columns: 1fr 1.7fr;
+    border: 1px solid var(--ink);
+    margin-bottom: -1px;
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity .55s ease, transform .55s ease;
+  }
+  .foundation-block.visible { opacity: 1; transform: translateY(0); }
+
+  .fblock-text {
+    padding: 38px 38px 42px;
+    border-right: 1px solid var(--ink);
+    transition: background .2s;
+  }
+  .fblock-text:hover { background: var(--cream); }
+
+  .ftag {
+    font-size: 11px;
+    letter-spacing: .35em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+    font-family: 'EB Garamond', serif;
+  }
+  .fblock-text h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 1.15;
+    margin-bottom: 13px;
+    color: var(--ink);
+  }
+  .fblock-text p {
+    font-size: 18px;
+    line-height: 1.78;
+    color: var(--mid);
+  }
+
+  .fblock-diagram {
+    padding: 28px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fblock-diagram svg { width: 100%; height: auto; display: block; }
+
+  /* animation helpers for SVG lines */
+  @keyframes fdl { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
+  @keyframes ffi { from { opacity: 0; } to { opacity: 1; } }
+  .la  { stroke-dasharray:1000; stroke-dashoffset:1000; animation: fdl 1.5s ease .15s forwards; }
+  .la2 { stroke-dasharray:1000; stroke-dashoffset:1000; animation: fdl 1.5s ease .4s  forwards; }
+  .la3 { stroke-dasharray:1000; stroke-dashoffset:1000; animation: fdl 1.5s ease .65s forwards; }
+  .la4 { stroke-dasharray:1000; stroke-dashoffset:1000; animation: fdl 1.5s ease .9s  forwards; }
+  .f1  { opacity:0; animation: ffi .45s ease .8s  forwards; }
+  .f2  { opacity:0; animation: ffi .45s ease 1.0s forwards; }
+  .f3  { opacity:0; animation: ffi .45s ease 1.2s forwards; }
+  .f4  { opacity:0; animation: ffi .45s ease 1.4s forwards; }
+
+  @media (max-width: 700px) {
+    .foundation-block { grid-template-columns: 1fr; }
+    .fblock-text { border-right: none; border-bottom: 1px solid var(--ink); }
+    .foundations-wrap { padding: 60px 20px; }
+  }
+
+  /* ─── UTILITY ─── */
+  .text-accent { color: var(--accent); }
+  .mt-0 { margin-top: 0; }
+  .rule-ornament {
+    text-align: center;
+    color: var(--light-ink);
+    font-size: 20px;
+    letter-spacing: 0.4em;
+    margin: 16px 0;
+    user-select: none;
+  }
+
+  /* ─── DECORATIVE HEADER BAR ─── */
+  .header-bar {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 10px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'EB Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+
+  /* ─── CHAPTER DIVIDER ─── */
+  .chapter-divider {
+    text-align: center;
+    padding: 20px 0;
+    color: var(--light-ink);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+  }
+
+  .big-initial {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8em;
+    font-weight: 700;
+    float: left;
+    line-height: 0.8;
+    margin: 4px 10px 0 0;
+    color: var(--ink);
+  }
+
+  /* AI wave animation on cover */
+  .wave-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    overflow: hidden;
+    opacity: 0.12;
+  }
+
+  .wave-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ─── PREVISÕES ─── */
+  .article-card {
+    border: 1px solid var(--ink); margin-bottom: -1px;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity .55s ease, transform .55s ease;
+  }
+  .article-card.visible { opacity: 1; transform: translateY(0); }
+  .card-header {
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: end; padding: 32px 40px 24px;
+    border-bottom: 1px solid var(--ink); gap: 24px;
+  }
+  .card-byline {
+    font-size: 11px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 8px; font-family: 'EB Garamond', serif;
+  }
+  .card-header h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 4vw, 43px); font-weight: 600;
+    line-height: 1.08; color: var(--ink);
+  }
+  .card-header h3 em { font-style: italic; font-weight: 400; }
+  .card-meta {
+    text-align: right; white-space: nowrap;
+    font-size: 12px; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--light-ink); line-height: 1.9;
+  }
+  .card-body { display: grid; grid-template-columns: 1fr 1fr; }
+  .card-col { padding: 36px 40px 40px; }
+  .card-col:first-child { border-right: 1px solid var(--light-ink); opacity: 0.4; border-color: var(--cream); border-right: 1px solid #ccc5b5; }
+  .card-col:first-child { border-right: 1px solid var(--cream); border-right: 1px solid #ccc5b5; }
+  .col-label {
+    font-size: 10px; letter-spacing: .35em; text-transform: uppercase;
+    color: var(--light-ink); margin-bottom: 18px;
+    padding-bottom: 10px; border-bottom: 1px solid #ccc5b5;
+    font-family: 'EB Garamond', serif;
+  }
+  .card-col p { font-size: 18px; line-height: 1.78; color: var(--mid); margin-bottom: 18px; }
+  .card-col p:last-child { margin-bottom: 0; }
+  .pillar-list { list-style: none; padding: 0; margin: 0; }
+  .pillar-list li {
+    display: grid; grid-template-columns: 28px 1fr; gap: 10px;
+    font-size: 17px; line-height: 1.65; color: var(--mid);
+    padding: 10px 0; border-bottom: 1px solid var(--cream);
+  }
+  .pillar-list li:last-child { border-bottom: none; }
+  .pillar-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px; font-weight: 600; color: var(--accent); padding-top: 1px;
+  }
+  .ts-strip { padding: 0 40px 36px; border-top: 1px solid #ccc5b5; }
+  .ts-label {
+    font-size: 10px; letter-spacing: .35em; text-transform: uppercase;
+    color: var(--light-ink); padding: 16px 0 18px; font-family: 'EB Garamond', serif;
+  }
+  .ts-row { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid #ccc5b5; }
+  .ts-cell { padding: 16px 16px 18px; border-right: 1px solid #ccc5b5; }
+  .ts-cell:last-child { border-right: none; }
+  .ts-year {
+    font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600;
+    color: var(--ink); display: block; margin-bottom: 5px;
+  }
+  .ts-event { font-size: 15px; line-height: 1.55; color: var(--mid); }
+  .ts-cell.hi { background: var(--ink); }
+  .ts-cell.hi .ts-year, .ts-cell.hi .ts-event { color: var(--paper); }
+  .card-quote { border-top: 1px solid #ccc5b5; padding: 28px 40px; background: var(--cream); }
+  .card-quote blockquote {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 23px;
+    line-height: 1.4; color: var(--ink); max-width: 820px;
+  }
+  .card-quote cite {
+    display: block; margin-top: 12px; font-family: 'EB Garamond', serif; font-style: normal;
+    font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--light-ink);
+  }
+  .super-wrap { border: 1px solid var(--ink); margin-top: 64px; opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
+  .super-wrap.visible { opacity: 1; transform: translateY(0); }
+  .super-header { padding: 32px 40px 24px; border-bottom: 1px solid var(--ink); background: var(--ink); }
+  .super-header .card-byline { color: #c87070; }
+  .super-header h3 { font-family: 'Cormorant Garamond', serif; font-size: clamp(30px,4vw,46px); font-weight: 600; line-height: 1.08; color: var(--paper); }
+  .super-header h3 em { font-style: italic; font-weight: 400; }
+  .def-band { padding: 28px 40px; border-bottom: 1px solid #ccc5b5; background: var(--cream); }
+  .def-band p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(19px,2.2vw,24px); line-height: 1.5; color: var(--ink); max-width: 820px; }
+  .def-band cite { display: block; margin-top: 10px; font-family: 'EB Garamond', serif; font-style: normal; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--light-ink); }
+  .super-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid #ccc5b5; }
+  .super-col { padding: 32px 30px 36px; border-right: 1px solid #ccc5b5; }
+  .super-col:last-child { border-right: none; }
+  .super-col-label { font-size: 10px; letter-spacing: .35em; text-transform: uppercase; color: var(--light-ink); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #ccc5b5; font-family: 'EB Garamond', serif; }
+  .super-col h4 { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; margin-bottom: 10px; line-height: 1.2; color: var(--ink); }
+  .super-col p { font-size: 17px; line-height: 1.72; color: var(--mid); margin-bottom: 12px; }
+  .super-col p:last-child { margin-bottom: 0; }
+  .risk-grid { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #ccc5b5; }
+  .risk-item { padding: 28px 32px; border-right: 1px solid #ccc5b5; border-bottom: 1px solid #ccc5b5; }
+  .risk-item:nth-child(2n) { border-right: none; }
+  .risk-item:nth-child(3), .risk-item:nth-child(4) { border-bottom: none; }
+  .risk-tag { font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; font-family: 'EB Garamond', serif; }
+  .risk-item h4 { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; margin-bottom: 10px; color: var(--ink); line-height: 1.2; }
+  .risk-item p { font-size: 17px; line-height: 1.72; color: var(--mid); }
+  .spectrum-wrap { padding: 28px 40px 36px; }
+  .spectrum-label { font-size: 10px; letter-spacing: .35em; text-transform: uppercase; color: var(--light-ink); margin-bottom: 18px; font-family: 'EB Garamond', serif; }
+  .spectrum-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; border: 1px solid var(--ink); margin-bottom: 10px; }
+  .spec-cell { padding: 14px 20px; border-right: 1px solid var(--ink); }
+  .spec-cell:last-child { border-right: none; }
+  .spec-cell-top { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 600; color: var(--ink); margin-bottom: 4px; display: block; }
+  .spec-cell-body { font-size: 15px; color: var(--mid); line-height: 1.55; }
+  .spec-cell.dark { background: var(--ink); }
+  .spec-cell.dark .spec-cell-top, .spec-cell.dark .spec-cell-body { color: var(--paper); }
+  .spec-cell.mid-dark { background: #2a2520; }
+  .spec-cell.mid-dark .spec-cell-top, .spec-cell.mid-dark .spec-cell-body { color: var(--paper); }
+  .spectrum-note { font-size: 16px; color: var(--light-ink); font-style: italic; }
+  .verdict-block { padding: 40px; border: 1px solid var(--ink); opacity: 0; transform: translateY(16px); transition: opacity .55s ease .2s, transform .55s ease .2s; }
+  .verdict-block.visible { opacity: 1; transform: translateY(0); }
+  .verdict-block h4 { font-family: 'Cormorant Garamond', serif; font-size: 27px; font-weight: 600; margin-bottom: 20px; color: var(--ink); padding-bottom: 16px; border-bottom: 1px solid #ccc5b5; }
+  .verdict-block p { font-size: 19px; line-height: 1.82; color: var(--mid); margin-bottom: 16px; }
+  .verdict-block p:last-child { margin-bottom: 0; }
+
+  /* ─── NVIDIA ─── */
+  .nv-section { max-width: 960px; margin: 0 auto; padding: 80px 40px; border-top: 1px solid var(--ink); }
+  .origin-strip { border: 1px solid var(--ink); margin-bottom: -1px; display: grid; grid-template-columns: 1fr 1fr; opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
+  .origin-strip.visible { opacity: 1; transform: translateY(0); }
+  .origin-col { padding: 36px 38px 40px; transition: background .2s; }
+  .origin-col:first-child { border-right: 1px solid var(--ink); }
+  .origin-col:hover { background: var(--cream); }
+  .block-label { font-size: 10px; letter-spacing: .35em; text-transform: uppercase; color: var(--light-ink); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #ccc5b5; font-family: 'EB Garamond', serif; }
+  .origin-col h3 { font-family: 'Cormorant Garamond', serif; font-size: 25px; font-weight: 600; line-height: 1.15; margin-bottom: 14px; color: var(--ink); }
+  .origin-col p { font-size: 18px; line-height: 1.78; color: var(--mid); margin-bottom: 14px; }
+  .origin-col p:last-child { margin-bottom: 0; }
+  .milestones-wrap { border: 1px solid var(--ink); margin-bottom: -1px; opacity: 0; transform: translateY(20px); transition: opacity .55s ease .1s, transform .55s ease .1s; }
+  .milestones-wrap.visible { opacity: 1; transform: translateY(0); }
+  .milestones-header { padding: 22px 38px; border-bottom: 1px solid var(--ink); background: var(--ink); }
+  .milestones-header span { font-size: 10px; letter-spacing: .35em; text-transform: uppercase; color: #c8c0b0; font-family: 'EB Garamond', serif; }
+  .milestones-row { display: grid; grid-template-columns: repeat(6, 1fr); }
+  .ms-cell { padding: 22px 18px 26px; border-right: 1px solid #ccc5b5; opacity: 0; transform: translateY(10px); transition: opacity .4s ease, transform .4s ease, background .2s; }
+  .ms-cell:last-child { border-right: none; }
+  .ms-cell:hover { background: var(--cream); }
+  .ms-cell.visible { opacity: 1; transform: translateY(0); }
+  .ms-year { font-family: 'Cormorant Garamond', serif; font-size: 25px; font-weight: 600; color: var(--ink); display: block; margin-bottom: 6px; line-height: 1; }
+  .ms-cell.pivot .ms-year { color: var(--accent); }
+  .ms-text { font-size: 15px; line-height: 1.55; color: var(--mid); }
+  .bets-wrap { border: 1px solid var(--ink); margin-bottom: -1px; opacity: 0; transform: translateY(20px); transition: opacity .55s ease .05s, transform .55s ease .05s; }
+  .bets-wrap.visible { opacity: 1; transform: translateY(0); }
+  .bets-header { padding: 28px 38px 24px; border-bottom: 1px solid var(--ink); display: flex; justify-content: space-between; align-items: baseline; }
+  .bets-header h3 { font-family: 'Cormorant Garamond', serif; font-size: 29px; font-weight: 600; color: var(--ink); }
+  .bets-header h3 em { font-style: italic; font-weight: 400; }
+  .bets-header span { font-size: 10px; letter-spacing: .35em; text-transform: uppercase; color: var(--light-ink); font-family: 'EB Garamond', serif; }
+  .bets-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .bet-item { padding: 30px 36px 34px; border-right: 1px solid #ccc5b5; border-bottom: 1px solid #ccc5b5; transition: background .2s; }
+  .bet-item:hover { background: var(--cream); }
+  .bet-item:nth-child(2n) { border-right: none; }
+  .bet-item:nth-child(3), .bet-item:nth-child(4) { border-bottom: none; }
+  .bet-num { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; color: #ccc5b5; line-height: 1; margin-bottom: 10px; display: block; }
+  .bet-year { font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; font-family: 'EB Garamond', serif; }
+  .bet-item h4 { font-family: 'Cormorant Garamond', serif; font-size: 23px; font-weight: 600; margin-bottom: 12px; line-height: 1.2; color: var(--ink); }
+  .bet-item p { font-size: 17px; line-height: 1.75; color: var(--mid); }
+  .nv-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--ink); margin-bottom: -1px; opacity: 0; transform: translateY(16px); transition: opacity .55s ease, transform .55s ease; }
+  .nv-stats-row.visible { opacity: 1; transform: translateY(0); }
+  .nv-stat-cell { padding: 28px 24px 32px; border-right: 1px solid var(--ink); text-align: center; transition: background .2s; }
+  .nv-stat-cell:last-child { border-right: none; }
+  .nv-stat-cell:hover { background: var(--cream); }
+  .nv-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 46px; font-weight: 300; line-height: 1; color: var(--ink); display: block; margin-bottom: 8px; }
+  .nv-stat-unit { font-size: 10px; letter-spacing: .25em; text-transform: uppercase; color: var(--light-ink); font-family: 'EB Garamond', serif; display: block; margin-bottom: 6px; }
+  .nv-stat-desc { font-size: 15px; color: var(--mid); line-height: 1.5; }
+  .nv-pq { border-top: 3px solid var(--ink); border-bottom: 3px solid var(--ink); padding: 38px 0; margin: 56px 0; text-align: center; opacity: 0; transform: translateY(16px); transition: opacity .55s ease, transform .55s ease; }
+  .nv-pq.visible { opacity: 1; transform: translateY(0); }
+  .nv-pq blockquote { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(25px, 3.5vw, 38px); font-weight: 400; line-height: 1.3; color: var(--ink); max-width: 760px; margin: 0 auto; }
+  .nv-pq cite { display: block; font-family: 'EB Garamond', serif; font-style: normal; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--light-ink); margin-top: 18px; }
+  .moat-wrap { border: 1px solid var(--ink); margin-bottom: -1px; opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
+  .moat-wrap.visible { opacity: 1; transform: translateY(0); }
+  .moat-header { padding: 28px 38px 24px; border-bottom: 1px solid var(--ink); background: var(--ink); }
+  .moat-header h3 { font-family: 'Cormorant Garamond', serif; font-size: 29px; font-weight: 600; color: var(--paper); }
+  .moat-header h3 em { font-style: italic; font-weight: 400; }
+  .moat-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .moat-col { padding: 28px 26px 32px; border-right: 1px solid #ccc5b5; transition: background .2s; }
+  .moat-col:last-child { border-right: none; }
+  .moat-col:hover { background: var(--cream); }
+  .moat-icon { font-size: 25px; margin-bottom: 12px; display: block; }
+  .moat-col h4 { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; margin-bottom: 10px; line-height: 1.2; color: var(--ink); }
+  .moat-col p { font-size: 16px; line-height: 1.7; color: var(--mid); }
+  .fin-wrap { border: 1px solid var(--ink); margin-bottom: -1px; opacity: 0; transform: translateY(20px); transition: opacity .55s ease .1s, transform .55s ease .1s; }
+  .fin-wrap.visible { opacity: 1; transform: translateY(0); }
+  .fin-body { display: grid; grid-template-columns: 1.1fr 1fr; }
+  .fin-col { padding: 36px 38px 40px; }
+  .fin-col:first-child { border-right: 1px solid var(--ink); }
+  .fin-col p { font-size: 18px; line-height: 1.8; color: var(--mid); margin-bottom: 14px; }
+  .fin-col p:last-child { margin-bottom: 0; }
+  .mktcap-list { list-style: none; padding: 0; margin: 0; }
+  .mktcap-item { display: grid; grid-template-columns: 72px 1fr; gap: 0 16px; padding: 12px 0; border-bottom: 1px solid #ccc5b5; align-items: center; }
+  .mktcap-item:last-child { border-bottom: none; }
+  .mktcap-date { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600; color: var(--accent); text-align: right; }
+  .mktcap-bar-wrap { display: flex; align-items: center; gap: 12px; }
+  .mktcap-bar { height: 8px; background: var(--ink); border-radius: 1px; }
+  .mktcap-label { font-size: 16px; color: var(--mid); white-space: nowrap; }
+  .previsoes-wrap { max-width: 960px; margin: 0 auto; padding: 80px 40px; border-top: 1px solid var(--ink); }
+</style>
+</head>
+<body>
+<nav style="position:sticky;top:0;z-index:1000;background:rgba(245,240,232,0.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(17,16,8,0.15);height:60px;display:flex;align-items:center;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 32px;display:flex;align-items:center;width:100%;gap:0">
+    <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;margin-right:32px">
+      <div style="width:26px;height:26px;background:#111008;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:13px;font-weight:700;color:#f5f0e8">G</div>
+      <span style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#111008">GTC 2026</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none">
+      <a href="1_evento.html" style="display:block;padding:5px 10px;font-size:11px;color:#4a4540;text-decoration:none;border-radius:3px;white-space:nowrap">Evento</a>
+      <a href="2_nvidia.html" style="display:block;padding:5px 10px;font-size:11px;color:#4a4540;text-decoration:none;border-radius:3px;white-space:nowrap">NVIDIA: História</a>
+      <a href="3_insight_deck.html" style="display:block;padding:5px 10px;font-size:11px;color:#4a4540;text-decoration:none;border-radius:3px;white-space:nowrap">Insight Deck</a>
+      <a href="4_ai_investimentos.html" style="display:block;padding:5px 10px;font-size:11px;color:#4a4540;text-decoration:none;border-radius:3px;white-space:nowrap">AI &amp; Investimentos</a>
+      <a href="5_physical_ai.html" style="display:block;padding:5px 10px;font-size:11px;color:#4a4540;text-decoration:none;border-radius:3px;white-space:nowrap">Physical AI</a>
+      <a href="6_ia_capital_solutions.html" style="display:block;padding:5px 10px;font-size:11px;color:#4a4540;text-decoration:none;border-radius:3px;white-space:nowrap">Capital Solutions</a>
+      <a href="7_revolut_summary.html" style="display:block;padding:5px 10px;font-size:11px;color:#4a4540;text-decoration:none;border-radius:3px;white-space:nowrap">Revolut</a>
+      <a href="8_situational_awareness.html" style="display:block;padding:5px 10px;font-size:11px;color:#c8102e;text-decoration:none;border-radius:3px;background:rgba(200,16,46,0.08);white-space:nowrap;font-weight:600">Situational Awareness</a>
+    </div>
+    <div style="font-family:monospace;font-size:10px;color:#8a857d;padding:4px 10px;border:1px solid rgba(17,16,8,0.15);border-radius:100px;margin-left:auto;white-space:nowrap;flex-shrink:0">Março 2026</div>
+  </div>
+</nav>
+<div style="background:#ede8da;border-bottom:1px solid rgba(17,16,8,0.1);padding:12px 32px;display:flex;align-items:center;gap:16px">
+  <a href="index.html" style="font-size:12px;color:#8a857d;text-decoration:none;font-family:Libre Baskerville,serif">← Voltar ao Briefing</a>
+  <div style="width:1px;height:12px;background:rgba(17,16,8,0.12)"></div>
+  <span style="font-family:monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#c8102e">08 — Situational Awareness</span>
+  <span style="font-size:13px;color:#111008;font-family:EB Garamond,serif;font-weight:600">Inteligência Artificial: Consciência Situacional</span>
+</div>
+
+
+<!-- ─── TOP BAR ─── -->
+<div class="header-bar">
+  <span>Intelligence Brief</span>
+  <span>Internal — Restricted Distribution</span>
+  <span>2025 — 2026</span>
+</div>
+
+<!-- ─── COVER ─── -->
+<section class="cover" id="cover">
+  <div class="cover-top-rule">
+    <span>Artificial Intelligence</span>
+  </div>
+
+  <p class="dateline">A Presentation by the Investment Team</p>
+
+  <!-- Dandy monocle illustration inspired by New Yorker's Eustace Tilley -->
+  <svg class="cover-illustration" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+    <!-- Elegant AI "robot dandy" in New Yorker engraving style -->
+    <!-- Head/Hat -->
+    <ellipse cx="120" cy="95" rx="38" ry="40" fill="none" stroke="#111008" stroke-width="1.5"/>
+    <!-- Top hat brim -->
+    <rect x="75" y="62" width="90" height="6" rx="1" fill="#111008"/>
+    <!-- Top hat body -->
+    <rect x="88" y="24" width="64" height="40" rx="2" fill="#111008"/>
+    <!-- Hat band -->
+    <rect x="88" y="58" width="64" height="6" fill="#333"/>
+    <!-- Eyes -->
+    <circle cx="107" cy="90" r="7" fill="none" stroke="#111008" stroke-width="1.5"/>
+    <circle cx="133" cy="90" r="7" fill="none" stroke="#111008" stroke-width="1.5"/>
+    <circle cx="107" cy="90" r="3" fill="#111008"/>
+    <circle cx="133" cy="90" r="3" fill="#111008"/>
+    <!-- Monocle on right eye -->
+    <circle cx="133" cy="90" r="11" fill="none" stroke="#111008" stroke-width="1"/>
+    <line x1="142" y1="98" x2="150" y2="112" stroke="#111008" stroke-width="1"/>
+    <!-- Nose bridge -->
+    <path d="M120 95 Q116 103 120 108" fill="none" stroke="#111008" stroke-width="1.2"/>
+    <!-- Mouth -->
+    <path d="M109 115 Q120 122 131 115" fill="none" stroke="#111008" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Bow tie -->
+    <path d="M100 140 L112 148 L100 156 Z" fill="#111008"/>
+    <path d="M140 140 L128 148 L140 156 Z" fill="#111008"/>
+    <ellipse cx="120" cy="148" rx="8" ry="6" fill="#111008"/>
+    <!-- Collar -->
+    <path d="M95 134 L105 148 L120 138 L135 148 L145 134" fill="none" stroke="#111008" stroke-width="1.5"/>
+    <!-- Jacket -->
+    <path d="M82 164 Q80 200 82 220 L158 220 Q160 200 158 164 L145 134 Q135 148 120 138 Q105 148 95 134 Z" fill="none" stroke="#111008" stroke-width="1.5"/>
+    <!-- Jacket lapels -->
+    <path d="M95 134 Q100 155 108 168" fill="none" stroke="#111008" stroke-width="1"/>
+    <path d="M145 134 Q140 155 132 168" fill="none" stroke="#111008" stroke-width="1"/>
+    <!-- Pocket square -->
+    <path d="M140 175 L148 175 L148 185 L140 185 Z" fill="none" stroke="#111008" stroke-width="1"/>
+    <path d="M140 175 Q144 170 148 175" fill="none" stroke="#111008" stroke-width="1"/>
+    <!-- Waistcoat lines - cross-hatch engraving style -->
+    <line x1="108" y1="168" x2="132" y2="168" stroke="#111008" stroke-width="0.5" opacity="0.5"/>
+    <line x1="106" y1="176" x2="134" y2="176" stroke="#111008" stroke-width="0.5" opacity="0.5"/>
+    <line x1="105" y1="184" x2="135" y2="184" stroke="#111008" stroke-width="0.5" opacity="0.5"/>
+    <line x1="104" y1="192" x2="136" y2="192" stroke="#111008" stroke-width="0.5" opacity="0.5"/>
+    <!-- Circuit/AI detail on hat -->
+    <line x1="100" y1="38" x2="140" y2="38" stroke="#f5f0e8" stroke-width="0.8" opacity="0.6"/>
+    <line x1="100" y1="44" x2="140" y2="44" stroke="#f5f0e8" stroke-width="0.8" opacity="0.4"/>
+    <circle cx="108" cy="38" r="2" fill="#f5f0e8" opacity="0.6"/>
+    <circle cx="120" cy="38" r="2" fill="#f5f0e8" opacity="0.6"/>
+    <circle cx="132" cy="38" r="2" fill="#f5f0e8" opacity="0.6"/>
+  </svg>
+
+  <h1 class="masthead-title"><em>Situational</em><br>Awareness</h1>
+  <p class="masthead-subtitle">The Past, Present & Future of Artificial Intelligence</p>
+
+  <p class="cover-deck">
+    Uma leitura essencial sobre a trajetória da inteligência artificial — da teoria matemática ao agente autônomo. Para quem toma decisões em um mundo que está sendo reescrito.
+  </p>
+
+  <nav class="cover-nav">
+    <a href="#historia">I. História</a>
+    <a href="#foundations">II. Foundations</a>
+    <a href="#previsoes">III. Previsões</a>
+    <a href="#nvidia">IV. NVIDIA</a>
+    <a href="#status">V. Status Quo</a>
+    <a href="#perspectivas">VI. Perspectivas</a>
+    <a href="#investimentos">VII. Implicações</a>
+  </nav>
+
+  <div class="wave-container">
+    <svg class="wave-svg" viewBox="0 0 1200 80" preserveAspectRatio="none">
+      <path d="M0,40 C200,10 400,70 600,40 C800,10 1000,70 1200,40 L1200,80 L0,80 Z" fill="#111008"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ─── I. HISTÓRIA ─── -->
+<section class="section" id="historia">
+  <div class="section-label">
+    <span class="section-number">I</span>
+    História
+  </div>
+
+  <h2>Da <em>Sala de Máquinas</em><br>ao Assistente Onipresente</h2>
+
+  <p class="intro-text drop-cap">
+    A inteligência artificial não nasceu no Vale do Silício. Ela nasceu no papel — nas mentes de matemáticos, filósofos e engenheiros que ousaram perguntar: <em>pode uma máquina pensar?</em>
+  </p>
+
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <div class="timeline-year">1950</div>
+      <div class="timeline-line"></div>
+      <div class="timeline-content">
+        <h3>O Teste de Turing</h3>
+        <p>Alan Turing publica "Computing Machinery and Intelligence", propondo o imitation game como critério de inteligência. Uma pergunta que definiu 75 anos de pesquisa.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-year">1956</div>
+      <div class="timeline-line"></div>
+      <div class="timeline-content">
+        <h3>Nascimento do Campo</h3>
+        <p>A conferência de Dartmouth cunha oficialmente o termo "Artificial Intelligence". McCarthy, Minsky, Shannon e Simon acreditavam que em uma geração o problema estaria resolvido.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-year">1969–86</div>
+      <div class="timeline-line"></div>
+      <div class="timeline-content">
+        <h3>Os Invernos da IA</h3>
+        <p>Duas ondas de euforia seguidas por colapsos de financiamento. As promessas superaram a capacidade computacional. A palavra "IA" tornava-se radioativa em círculos acadêmicos.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-year">1997</div>
+      <div class="timeline-line"></div>
+      <div class="timeline-content">
+        <h3>Deep Blue vence Kasparov</h3>
+        <p>O computador da IBM derrota o campeão mundial de xadrez. Um marco simbólico — mas Deep Blue era força bruta, não inteligência geral. A distinção importaria por décadas.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-year">2012</div>
+      <div class="timeline-line"></div>
+      <div class="timeline-content">
+        <h3>A Revolução do Deep Learning</h3>
+        <p>AlexNet vence o ImageNet por margem absurda. Hinton, LeCun e Bengio demonstram que redes neurais profundas, treinadas com GPUs e dados massivos, superam tudo o que veio antes.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-year">2017</div>
+      <div class="timeline-line"></div>
+      <div class="timeline-content">
+        <h3>"Attention Is All You Need"</h3>
+        <p>O paper do Google Brain introduz a arquitetura Transformer. Sem exagero: é o momento mais importante da história da IA. Tudo que veio depois — GPT, Gemini, Claude — é descendente direto desta ideia.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-year">2022</div>
+      <div class="timeline-line"></div>
+      <div class="timeline-content">
+        <h3>ChatGPT & o Grande Despertar</h3>
+        <p>OpenAI lança ChatGPT. Cem milhões de usuários em 60 dias. O modelo mais rápido de adoção da história tecnológica. A IA deixa de ser assunto de pesquisa e passa a ser realidade cotidiana.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-year">2024–25</div>
+      <div class="timeline-line"></div>
+      <div class="timeline-content">
+        <h3>A Era dos Agentes</h3>
+        <p>Modelos de raciocínio (o1, Claude 3.7, Gemini 2.0). Agentes que planejam, executam e se auto-corrigem. A IA deixa de responder perguntas e começa a realizar tarefas de forma autônoma.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── II. FOUNDATIONS ─── -->
+<div class="foundations-wrap" id="foundations">
+  <div class="section-label">
+    <span class="section-number">II</span>
+    Foundations
+  </div>
+
+  <h2>Os <em>Alicerces</em><br>Conceituais</h2>
+
+  <p class="intro-text" style="margin-bottom:56px;">
+    Oito conceitos fundamentais — ordenados da base ao topo — que formam o vocabulário essencial para qualquer decisor que precisa navegar o campo da inteligência artificial com precisão e profundidade.
+  </p>
+
+  <!-- ══ 00 · REDE NEURAL ══════════════════════════════════ -->
+  <div class="foundation-block">
+    <div class="fblock-text">
+      <p class="ftag">00 — Bloco Construtivo</p>
+      <h3>O que é uma Rede Neural?</h3>
+      <p>Sistema computacional inspirado no cérebro biológico. Neurônios artificiais recebem entradas, multiplicam por <em>pesos</em>, somam e passam o resultado adiante. Treinada com exemplos, a rede ajusta seus pesos até aprender padrões. É o átomo de toda IA moderna.</p>
+    </div>
+    <div class="fblock-diagram">
+      <svg viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg" font-family="EB Garamond, Georgia, serif">
+        <defs>
+          <marker id="m0b" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#111008"/></marker>
+          <marker id="m0g" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#8a857d"/></marker>
+        </defs>
+        <text x="148" y="14" text-anchor="middle" font-size="13" fill="#8a857d" letter-spacing=".1em">NEURÔNIO ARTIFICIAL</text>
+        <circle cx="22" cy="58"  r="14" fill="none" stroke="#111008" stroke-width="1.2"/><text x="22" y="63"  text-anchor="middle" font-size="14" fill="#111008">x₁</text>
+        <circle cx="22" cy="100" r="14" fill="none" stroke="#111008" stroke-width="1.2"/><text x="22" y="105" text-anchor="middle" font-size="14" fill="#111008">x₂</text>
+        <circle cx="22" cy="142" r="14" fill="none" stroke="#111008" stroke-width="1.2"/><text x="22" y="147" text-anchor="middle" font-size="14" fill="#111008">x₃</text>
+        <circle cx="168" cy="100" r="34" fill="#111008"/>
+        <text x="168" y="95"  text-anchor="middle" font-size="13" fill="#f5f0e8">Σ wᵢxᵢ + b</text>
+        <text x="168" y="113" text-anchor="middle" font-size="13" fill="#ede8da">f(·)</text>
+        <line class="la" x1="36" y1="58"  x2="136" y2="88"  stroke="#111008" stroke-width="1.2" marker-end="url(#m0b)"/>
+        <line class="la" x1="36" y1="100" x2="134" y2="100" stroke="#111008" stroke-width="1.2" marker-end="url(#m0b)"/>
+        <line class="la" x1="36" y1="142" x2="136" y2="112" stroke="#111008" stroke-width="1.2" marker-end="url(#m0b)"/>
+        <text class="f1" x="80" y="64"  font-size="13" fill="#c8102e">w₁</text>
+        <text class="f1" x="78" y="96"  font-size="13" fill="#c8102e">w₂</text>
+        <text class="f1" x="80" y="134" font-size="13" fill="#c8102e">w₃</text>
+        <line class="la2" x1="202" y1="100" x2="262" y2="100" stroke="#111008" stroke-width="1.4" marker-end="url(#m0b)"/>
+        <text class="f2" x="274" y="96"  font-size="16" fill="#111008">ŷ</text>
+        <text class="f2" x="272" y="113" font-size="12" fill="#8a857d">output</text>
+        <line x1="310" y1="8" x2="310" y2="188" stroke="#ccc5b5" stroke-width=".8"/>
+        <text x="445" y="14" text-anchor="middle" font-size="13" fill="#8a857d" letter-spacing=".1em">ANÁLOGO BIOLÓGICO</text>
+        <line class="la3" x1="328" y1="54"  x2="400" y2="87"  stroke="#8a857d" stroke-width="1.1" marker-end="url(#m0g)"/>
+        <line class="la3" x1="324" y1="100" x2="398" y2="100" stroke="#8a857d" stroke-width="1.1" marker-end="url(#m0g)"/>
+        <line class="la3" x1="328" y1="146" x2="400" y2="113" stroke="#8a857d" stroke-width="1.1" marker-end="url(#m0g)"/>
+        <text x="314" y="52"  font-size="12" fill="#8a857d">Dendrito</text>
+        <text x="310" y="100" font-size="12" fill="#8a857d">Dendrito</text>
+        <text x="314" y="148" font-size="12" fill="#8a857d">Dendrito</text>
+        <ellipse cx="445" cy="100" rx="32" ry="32" fill="none" stroke="#8a857d" stroke-width="1.2"/>
+        <text x="445" y="97"  text-anchor="middle" font-size="12" fill="#8a857d">Corpo</text>
+        <text x="445" y="113" text-anchor="middle" font-size="12" fill="#8a857d">celular</text>
+        <line class="la3" x1="477" y1="100" x2="545" y2="100" stroke="#8a857d" stroke-width="1.2" marker-end="url(#m0g)"/>
+        <text x="492" y="90" font-size="12" fill="#8a857d">Axônio</text>
+        <text x="445" y="182" text-anchor="middle" font-size="12" fill="#8a857d">Sinapse ≈ peso (w) — força da conexão</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ══ 01 · MACHINE LEARNING ════════════════════════════ -->
+  <div class="foundation-block">
+    <div class="fblock-text">
+      <p class="ftag">01 — Aprendizado</p>
+      <h3>Foundations of Machine Learning</h3>
+      <p>ML é a capacidade de um sistema melhorar seu desempenho a partir de dados, sem ser programado explicitamente para cada caso. O loop central: dados entram, o modelo prediz, o erro é calculado e os pesos são ajustados — iterativamente, até convergir.</p>
+    </div>
+    <div class="fblock-diagram">
+      <svg viewBox="0 0 580 205" xmlns="http://www.w3.org/2000/svg" font-family="EB Garamond, Georgia, serif">
+        <defs>
+          <marker id="m1b" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#111008"/></marker>
+          <marker id="m1r" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#c8102e"/></marker>
+        </defs>
+        <rect x="14"  y="76" width="96" height="52" rx="2" fill="none" stroke="#111008" stroke-width="1.3"/>
+        <text x="62"  y="106" text-anchor="middle" font-size="17" fill="#111008" font-family="Cormorant Garamond, serif">Dados</text>
+        <rect x="242" y="76" width="96" height="52" rx="2" fill="#111008"/>
+        <text x="290" y="100" text-anchor="middle" font-size="17" fill="#f5f0e8" font-family="Cormorant Garamond, serif">Modelo</text>
+        <text x="290" y="118" text-anchor="middle" font-size="13" fill="#ede8da">f(x) → ŷ</text>
+        <rect x="470" y="76" width="96" height="52" rx="2" fill="none" stroke="#111008" stroke-width="1.3"/>
+        <text x="518" y="100" text-anchor="middle" font-size="17" fill="#111008" font-family="Cormorant Garamond, serif">Predição</text>
+        <text x="518" y="118" text-anchor="middle" font-size="13" fill="#8a857d">ŷ</text>
+        <ellipse cx="290" cy="174" rx="64" ry="24" fill="none" stroke="#c8102e" stroke-width="1"/>
+        <text x="290" y="179" text-anchor="middle" font-size="14" fill="#c8102e" letter-spacing=".04em">Erro — Loss ℒ</text>
+        <line class="la" x1="110" y1="102" x2="242" y2="102" stroke="#111008" stroke-width="1.3" marker-end="url(#m1b)"/>
+        <text class="f1" x="175" y="93" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".06em">TREINO</text>
+        <line class="la" x1="338" y1="102" x2="470" y2="102" stroke="#111008" stroke-width="1.3" marker-end="url(#m1b)"/>
+        <text class="f1" x="403" y="93" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".06em">OUTPUT</text>
+        <path class="la2" d="M518 128 Q518 174 354 174" fill="none" stroke="#c8102e" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#m1r)"/>
+        <path class="la2" d="M226 174 Q162 174 162 150 Q162 128 242 122" fill="none" stroke="#c8102e" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#m1r)"/>
+        <text class="f2" x="380" y="166" font-size="12" fill="#c8102e" letter-spacing=".05em">BACKPROPAGATION</text>
+        <line x1="14"  y1="200" x2="160" y2="200" stroke="#ccc5b5" stroke-width=".7"/>
+        <text x="14"  y="204" font-size="12" fill="#8a857d">Supervisionado</text>
+        <line x1="200" y1="200" x2="362" y2="200" stroke="#ccc5b5" stroke-width=".7"/>
+        <text x="200" y="204" font-size="12" fill="#8a857d">Não-supervisionado</text>
+        <line x1="402" y1="200" x2="580" y2="200" stroke="#ccc5b5" stroke-width=".7"/>
+        <text x="402" y="204" font-size="12" fill="#8a857d">Reforço (→ bloco 06)</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ══ 02 · DEEP LEARNING ════════════════════════════════ -->
+  <div class="foundation-block">
+    <div class="fblock-text">
+      <p class="ftag">02 — Profundidade</p>
+      <h3>Understanding Deep Learning</h3>
+      <p>Redes profundas empilham camadas — cada uma extrai representações progressivamente mais abstratas. A "profundidade" permitiu escalar para linguagem, visão e raciocínio. A lei empírica: mais camadas + mais dados + mais GPUs = capacidade emergente inesperada.</p>
+    </div>
+    <div class="fblock-diagram">
+      <svg viewBox="0 0 580 215" xmlns="http://www.w3.org/2000/svg" font-family="EB Garamond, Georgia, serif">
+        <defs>
+          <marker id="m2b" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#111008"/></marker>
+          <linearGradient id="g2" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stop-color="#f5f0e8"/><stop offset="100%" stop-color="#111008"/>
+          </linearGradient>
+        </defs>
+        <text x="52"  y="14" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".07em">INPUT</text>
+        <text x="152" y="14" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".07em">HIDDEN 1</text>
+        <text x="252" y="14" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".07em">HIDDEN 2</text>
+        <text x="352" y="14" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".07em">HIDDEN 3</text>
+        <text x="462" y="14" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".07em">OUTPUT</text>
+        <circle cx="52" cy="48"  r="10" fill="none" stroke="#111008" stroke-width="1.2"/>
+        <circle cx="52" cy="84"  r="10" fill="none" stroke="#111008" stroke-width="1.2"/>
+        <circle cx="52" cy="120" r="10" fill="none" stroke="#111008" stroke-width="1.2"/>
+        <circle cx="52" cy="156" r="10" fill="none" stroke="#111008" stroke-width="1.2"/>
+        <circle cx="152" cy="30"  r="10" fill="#111008"/><circle cx="152" cy="62"  r="10" fill="#111008"/>
+        <circle cx="152" cy="94"  r="10" fill="#111008"/><circle cx="152" cy="126" r="10" fill="#111008"/>
+        <circle cx="152" cy="158" r="10" fill="#111008"/><circle cx="152" cy="190" r="10" fill="#111008"/>
+        <circle cx="252" cy="30"  r="10" fill="#353030"/><circle cx="252" cy="62"  r="10" fill="#353030"/>
+        <circle cx="252" cy="94"  r="10" fill="#353030"/><circle cx="252" cy="126" r="10" fill="#353030"/>
+        <circle cx="252" cy="158" r="10" fill="#353030"/><circle cx="252" cy="190" r="10" fill="#353030"/>
+        <circle cx="352" cy="42"  r="10" fill="#646060"/>
+        <circle cx="352" cy="78"  r="10" fill="#646060"/>
+        <circle cx="352" cy="114" r="10" fill="#646060"/>
+        <circle cx="352" cy="150" r="10" fill="#646060"/>
+        <circle cx="352" cy="186" r="10" fill="#646060"/>
+        <circle cx="462" cy="72"  r="10" fill="none" stroke="#111008" stroke-width="1.3"/>
+        <circle cx="462" cy="108" r="10" fill="none" stroke="#111008" stroke-width="1.3"/>
+        <circle cx="462" cy="144" r="10" fill="none" stroke="#111008" stroke-width="1.3"/>
+        <g stroke="#ccc5b5" stroke-width=".45" opacity=".6">
+          <line x1="62" y1="48"  x2="142" y2="30"/><line x1="62" y1="48"  x2="142" y2="62"/><line x1="62" y1="48"  x2="142" y2="94"/>
+          <line x1="62" y1="84"  x2="142" y2="30"/><line x1="62" y1="84"  x2="142" y2="62"/><line x1="62" y1="84"  x2="142" y2="94"/><line x1="62" y1="84"  x2="142" y2="126"/>
+          <line x1="62" y1="120" x2="142" y2="62"/><line x1="62" y1="120" x2="142" y2="94"/><line x1="62" y1="120" x2="142" y2="126"/><line x1="62" y1="120" x2="142" y2="158"/>
+          <line x1="62" y1="156" x2="142" y2="94"/><line x1="62" y1="156" x2="142" y2="126"/><line x1="62" y1="156" x2="142" y2="158"/><line x1="62" y1="156" x2="142" y2="190"/>
+        </g>
+        <g stroke="#ccc5b5" stroke-width=".45" opacity=".35">
+          <line x1="162" y1="30"  x2="242" y2="30"/><line x1="162" y1="30"  x2="242" y2="62"/>
+          <line x1="162" y1="62"  x2="242" y2="30"/><line x1="162" y1="62"  x2="242" y2="62"/><line x1="162" y1="62"  x2="242" y2="94"/>
+          <line x1="162" y1="94"  x2="242" y2="62"/><line x1="162" y1="94"  x2="242" y2="94"/><line x1="162" y1="94"  x2="242" y2="126"/>
+          <line x1="162" y1="126" x2="242" y2="94"/><line x1="162" y1="126" x2="242" y2="126"/><line x1="162" y1="126" x2="242" y2="158"/>
+          <line x1="162" y1="158" x2="242" y2="126"/><line x1="162" y1="158" x2="242" y2="158"/><line x1="162" y1="158" x2="242" y2="190"/>
+          <line x1="162" y1="190" x2="242" y2="158"/><line x1="162" y1="190" x2="242" y2="190"/>
+        </g>
+        <g stroke="#ccc5b5" stroke-width=".45" opacity=".45">
+          <line x1="262" y1="30"  x2="342" y2="42"/><line x1="262" y1="62"  x2="342" y2="42"/><line x1="262" y1="62"  x2="342" y2="78"/>
+          <line x1="262" y1="94"  x2="342" y2="78"/><line x1="262" y1="94"  x2="342" y2="114"/>
+          <line x1="262" y1="126" x2="342" y2="114"/><line x1="262" y1="126" x2="342" y2="150"/>
+          <line x1="262" y1="158" x2="342" y2="150"/><line x1="262" y1="158" x2="342" y2="186"/><line x1="262" y1="190" x2="342" y2="186"/>
+        </g>
+        <g stroke="#111008" stroke-width=".7" opacity=".5">
+          <line x1="362" y1="42"  x2="452" y2="72"/><line x1="362" y1="78"  x2="452" y2="72"/><line x1="362" y1="78"  x2="452" y2="108"/>
+          <line x1="362" y1="114" x2="452" y2="72"/><line x1="362" y1="114" x2="452" y2="108"/><line x1="362" y1="114" x2="452" y2="144"/>
+          <line x1="362" y1="150" x2="452" y2="108"/><line x1="362" y1="150" x2="452" y2="144"/>
+          <line x1="362" y1="186" x2="452" y2="144"/>
+        </g>
+        <line class="la2" x1="472" y1="108" x2="540" y2="108" stroke="#111008" stroke-width="1.4" marker-end="url(#m2b)"/>
+        <rect x="52" y="202" width="410" height="5" rx="2" fill="url(#g2)"/>
+        <text x="52"  y="214" font-size="12" fill="#8a857d">Pixels / tokens brutos</text>
+        <text x="462" y="214" text-anchor="end" font-size="12" fill="#111008">Conceitos abstratos</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ══ 03 · EMBEDDINGS ══════════════════════════════════ -->
+  <div class="foundation-block">
+    <div class="fblock-text">
+      <p class="ftag">03 — Representação</p>
+      <h3>Embeddings &amp; Espaço Vetorial</h3>
+      <p>Para que uma máquina opere sobre linguagem, precisa transformar palavras em números. <em>Embeddings</em> mapeiam tokens para vetores num espaço de alta dimensão onde <em>proximidade = similaridade semântica</em>. A aritmética do significado: Rei − Homem + Mulher ≈ Rainha. É o fundamento de busca semântica, RAG e memória de agentes.</p>
+    </div>
+    <div class="fblock-diagram">
+      <svg viewBox="0 0 580 215" xmlns="http://www.w3.org/2000/svg" font-family="EB Garamond, Georgia, serif">
+        <defs>
+          <marker id="m3b" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#111008"/></marker>
+          <marker id="m3r" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#c8102e"/></marker>
+        </defs>
+        <rect x="14" y="80" width="100" height="48" rx="2" fill="none" stroke="#111008" stroke-width="1.2"/>
+        <text x="64" y="101" text-anchor="middle" font-size="16" fill="#111008" font-family="Cormorant Garamond, serif">"Gato"</text>
+        <text x="64" y="118" text-anchor="middle" font-size="12" fill="#8a857d">token</text>
+        <line class="la" x1="114" y1="104" x2="174" y2="104" stroke="#111008" stroke-width="1.2" marker-end="url(#m3b)"/>
+        <text class="f1" x="144" y="96" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".05em">ENCODE</text>
+        <rect x="174" y="64" width="114" height="80" rx="2" fill="#111008"/>
+        <text x="231" y="84"  text-anchor="middle" font-size="13" fill="#ede8da" letter-spacing=".06em">VETOR</text>
+        <text x="231" y="101" text-anchor="middle" font-size="12" fill="#f5f0e8">[0.82, −0.14,</text>
+        <text x="231" y="116" text-anchor="middle" font-size="12" fill="#f5f0e8"> 0.47,  0.93,</text>
+        <text x="231" y="131" text-anchor="middle" font-size="12" fill="#f5f0e8"> ...]  768d</text>
+        <line x1="302" y1="14" x2="302" y2="200" stroke="#ccc5b5" stroke-width=".8"/>
+        <text x="440" y="14" text-anchor="middle" font-size="13" fill="#8a857d" letter-spacing=".1em">ESPAÇO SEMÂNTICO (2D)</text>
+        <line x1="318" y1="188" x2="578" y2="188" stroke="#ccc5b5" stroke-width=".8" marker-end="url(#m3b)"/>
+        <line x1="318" y1="188" x2="318" y2="24"  stroke="#ccc5b5" stroke-width=".8" marker-end="url(#m3b)"/>
+        <circle cx="380" cy="158" r="5" fill="#111008"/><text x="380" y="150" text-anchor="middle" font-size="12" fill="#111008">Gato</text>
+        <circle cx="406" cy="150" r="5" fill="#111008"/><text x="410" y="142" text-anchor="middle" font-size="12" fill="#111008">Cão</text>
+        <circle cx="394" cy="173" r="5" fill="#111008"/><text x="403" y="184" text-anchor="middle" font-size="12" fill="#111008">Peixe</text>
+        <ellipse cx="393" cy="160" rx="28" ry="22" fill="none" stroke="#ccc5b5" stroke-width=".7" stroke-dasharray="3,2"/>
+        <text x="393" y="205" text-anchor="middle" font-size="11" fill="#8a857d">animais</text>
+        <circle cx="496" cy="64" r="5" fill="#111008"/><text x="496" y="56" text-anchor="middle" font-size="12" fill="#111008">Rei</text>
+        <circle cx="532" cy="60" r="5" fill="#111008"/><text x="532" y="52" text-anchor="middle" font-size="12" fill="#111008">Rainha</text>
+        <circle cx="510" cy="82" r="5" fill="#111008"/><text x="513" y="97" text-anchor="middle" font-size="12" fill="#111008">Príncipe</text>
+        <ellipse cx="513" cy="70" rx="28" ry="22" fill="none" stroke="#ccc5b5" stroke-width=".7" stroke-dasharray="3,2"/>
+        <text x="513" y="112" text-anchor="middle" font-size="11" fill="#8a857d">realeza</text>
+        <circle cx="430" cy="103" r="5" fill="#8a857d"/><text x="430" y="95" text-anchor="middle" font-size="12" fill="#8a857d">IA</text>
+        <circle cx="458" cy="115" r="5" fill="#8a857d"/><text x="468" y="126" text-anchor="middle" font-size="12" fill="#8a857d">Código</text>
+        <ellipse cx="444" cy="110" rx="22" ry="16" fill="none" stroke="#e0dbd0" stroke-width=".6" stroke-dasharray="3,2"/>
+        <line class="la3" x1="496" y1="64" x2="532" y2="60" stroke="#c8102e" stroke-width=".9" stroke-dasharray="3,2" marker-end="url(#m3r)"/>
+        <text x="514" y="46" text-anchor="middle" font-size="12" fill="#c8102e">Rei+Mulher≈Rainha</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ══ 04 · TRANSFORMERS ═════════════════════════════════ -->
+  <div class="foundation-block">
+    <div class="fblock-text">
+      <p class="ftag">04 — Arquitetura</p>
+      <h3>Transformers &amp; Attention</h3>
+      <p>O paper <em>"Attention Is All You Need"</em> (Google, 2017) introduziu a arquitetura Transformer. O mecanismo de <em>self-attention</em> permite que cada token "olhe" para todos os outros e pondere sua relevância — capturando dependências de longa distância que arquiteturas anteriores não conseguiam. Todo modelo moderno é Transformer.</p>
+    </div>
+    <div class="fblock-diagram">
+      <svg viewBox="0 0 580 215" xmlns="http://www.w3.org/2000/svg" font-family="EB Garamond, Georgia, serif">
+        <defs>
+          <marker id="m4b" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#111008"/></marker>
+          <marker id="m4r" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#c8102e"/></marker>
+        </defs>
+        <text x="290" y="14" text-anchor="middle" font-size="13" fill="#8a857d" letter-spacing=".08em">MECANISMO DE SELF-ATTENTION</text>
+        <rect x="16"  y="172" width="68" height="34" rx="2" fill="none" stroke="#111008" stroke-width="1.1"/>
+        <text x="50"  y="193" text-anchor="middle" font-size="14" fill="#111008" font-family="Cormorant Garamond, serif">"O</text>
+        <rect x="100" y="172" width="68" height="34" rx="2" fill="none" stroke="#111008" stroke-width="1.1"/>
+        <text x="134" y="193" text-anchor="middle" font-size="14" fill="#111008" font-family="Cormorant Garamond, serif">gato</text>
+        <rect x="184" y="172" width="76" height="34" rx="2" fill="none" stroke="#111008" stroke-width="1.1"/>
+        <text x="222" y="193" text-anchor="middle" font-size="14" fill="#111008" font-family="Cormorant Garamond, serif">sentou</text>
+        <rect x="276" y="172" width="68" height="34" rx="2" fill="none" stroke="#111008" stroke-width="1.1"/>
+        <text x="310" y="193" text-anchor="middle" font-size="14" fill="#111008" font-family="Cormorant Garamond, serif">no</text>
+        <rect x="360" y="172" width="80" height="34" rx="2" fill="none" stroke="#111008" stroke-width="1.1"/>
+        <text x="400" y="193" text-anchor="middle" font-size="14" fill="#111008" font-family="Cormorant Garamond, serif">tapete"</text>
+        <path class="la" d="M134 172 Q178 122 222 172" fill="none" stroke="#111008" stroke-width="2.5" opacity=".8" marker-end="url(#m4b)"/>
+        <path class="la2" d="M134 172 Q267 78 400 172" fill="none" stroke="#111008" stroke-width="1.4" opacity=".5" marker-end="url(#m4b)"/>
+        <path class="la3" d="M134 172 Q92 138 50 172"  fill="none" stroke="#111008" stroke-width=".7" opacity=".3" marker-end="url(#m4b)"/>
+        <path class="la3" d="M134 172 Q222 112 310 172" fill="none" stroke="#111008" stroke-width=".9" opacity=".35" marker-end="url(#m4b)"/>
+        <text class="f1" x="180" y="110" text-anchor="middle" font-size="13" fill="#111008">0.72 ↑</text>
+        <text class="f2" x="272" y="66"  text-anchor="middle" font-size="12" fill="#8a857d">0.43</text>
+        <text class="f3" x="84"  y="132" text-anchor="middle" font-size="12" fill="#8a857d">0.08</text>
+        <line x1="456" y1="24" x2="456" y2="205" stroke="#ccc5b5" stroke-width=".8"/>
+        <text x="518" y="34" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".08em">Q · K · V</text>
+        <rect x="470" y="42" width="96" height="24" rx="1" fill="none" stroke="#111008" stroke-width="1"/>
+        <text x="518" y="59" text-anchor="middle" font-size="13" fill="#111008">Query (Q)</text>
+        <rect x="470" y="76" width="96" height="24" rx="1" fill="none" stroke="#111008" stroke-width="1"/>
+        <text x="518" y="93" text-anchor="middle" font-size="13" fill="#111008">Key (K)</text>
+        <rect x="470" y="110" width="96" height="24" rx="1" fill="none" stroke="#c8102e" stroke-width="1"/>
+        <text x="518" y="127" text-anchor="middle" font-size="13" fill="#c8102e">Value (V)</text>
+        <text x="518" y="155" text-anchor="middle" font-size="12" fill="#8a857d">Atenção =</text>
+        <text x="518" y="170" text-anchor="middle" font-size="12" fill="#8a857d">softmax(QKᵀ/√d)V</text>
+        <line class="la2" x1="518" y1="134" x2="518" y2="148" stroke="#111008" stroke-width=".9" marker-end="url(#m4b)"/>
+        <rect x="476" y="148" width="84" height="24" rx="1" fill="#111008"/>
+        <text x="518" y="164" text-anchor="middle" font-size="12" fill="#f5f0e8">Attention Score</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ══ 05 · LLMs ═════════════════════════════════════════ -->
+  <div class="foundation-block">
+    <div class="fblock-text">
+      <p class="ftag">05 — Escala</p>
+      <h3>Large Language Models (LLMs)</h3>
+      <p>LLMs são Transformers treinados em escala massiva. O pipeline tem três fases: <em>pré-treino</em> (prever o próximo token em trilhões de palavras), <em>fine-tuning supervisionado</em> (exemplos de qualidade) e <em>RLHF</em> (alinhamento ao comportamento desejado). A escala gera capacidades emergentes — habilidades que surgem de forma abrupta acima de certos tamanhos de modelo.</p>
+    </div>
+    <div class="fblock-diagram">
+      <svg viewBox="0 0 580 205" xmlns="http://www.w3.org/2000/svg" font-family="EB Garamond, Georgia, serif">
+        <defs>
+          <marker id="m5b" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#111008"/></marker>
+          <marker id="m5r" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#c8102e"/></marker>
+        </defs>
+        <rect x="14" y="58" width="132" height="84" rx="2" fill="#111008"/>
+        <text x="80" y="86"  text-anchor="middle" font-size="15" fill="#f5f0e8" font-family="Cormorant Garamond, serif">① Pré-treino</text>
+        <text x="80" y="105" text-anchor="middle" font-size="12" fill="#ede8da">Próximo token</text>
+        <text x="80" y="121" text-anchor="middle" font-size="12" fill="#ede8da">~1–10 trilhões</text>
+        <text x="80" y="135" text-anchor="middle" font-size="11" fill="#8a857d">tokens de texto</text>
+        <line class="la" x1="146" y1="100" x2="200" y2="100" stroke="#111008" stroke-width="1.4" marker-end="url(#m5b)"/>
+        <text class="f1" x="173" y="92" text-anchor="middle" font-size="11" fill="#8a857d">Base Model</text>
+        <rect x="200" y="58" width="132" height="84" rx="2" fill="#3a3530"/>
+        <text x="266" y="86"  text-anchor="middle" font-size="15" fill="#f5f0e8" font-family="Cormorant Garamond, serif">② Fine-tuning</text>
+        <text x="266" y="105" text-anchor="middle" font-size="12" fill="#ede8da">Exemplos curados</text>
+        <text x="266" y="121" text-anchor="middle" font-size="12" fill="#ede8da">de instrução /</text>
+        <text x="266" y="135" text-anchor="middle" font-size="11" fill="#8a857d">resposta correta</text>
+        <line class="la2" x1="332" y1="100" x2="386" y2="100" stroke="#111008" stroke-width="1.4" marker-end="url(#m5b)"/>
+        <text class="f2" x="359" y="92" text-anchor="middle" font-size="11" fill="#8a857d">SFT Model</text>
+        <rect x="386" y="58" width="180" height="84" rx="2" fill="none" stroke="#c8102e" stroke-width="1.3"/>
+        <text x="476" y="86"  text-anchor="middle" font-size="15" fill="#c8102e" font-family="Cormorant Garamond, serif">③ RLHF</text>
+        <text x="476" y="105" text-anchor="middle" font-size="12" fill="#4a4540">Feedback humano</text>
+        <text x="476" y="121" text-anchor="middle" font-size="12" fill="#4a4540">treina Reward Model</text>
+        <text x="476" y="135" text-anchor="middle" font-size="11" fill="#8a857d">→ alinhamento</text>
+        <line class="la3" x1="476" y1="142" x2="476" y2="165" stroke="#c8102e" stroke-width="1.4" marker-end="url(#m5r)"/>
+        <rect x="386" y="165" width="180" height="32" rx="2" fill="#c8102e"/>
+        <text x="476" y="185" text-anchor="middle" font-size="14" fill="#f5f0e8" font-family="Cormorant Garamond, serif">ChatGPT · Claude · Gemini</text>
+        <text x="80" y="170" text-anchor="middle" font-size="12" fill="#8a857d">Emergência:</text>
+        <text x="80" y="185" text-anchor="middle" font-size="12" fill="#8a857d">capacidades que surgem</text>
+        <text x="80" y="199" text-anchor="middle" font-size="12" fill="#8a857d">com escala de parâmetros</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ══ 06 · REINFORCEMENT LEARNING ══════════════════════ -->
+  <div class="foundation-block">
+    <div class="fblock-text">
+      <p class="ftag">06 — Alinhamento</p>
+      <h3>Reinforcement Learning &amp; RLHF</h3>
+      <p>O agente aprende por tentativa e erro: age sobre um ambiente, recebe recompensas ou penalidades e ajusta sua política para maximizar o retorno acumulado. No RLHF, avaliadores humanos substituem a função de recompensa — ensinando o modelo o que é uma resposta "boa" segundo valores humanos.</p>
+    </div>
+    <div class="fblock-diagram">
+      <svg viewBox="0 0 580 205" xmlns="http://www.w3.org/2000/svg" font-family="EB Garamond, Georgia, serif">
+        <defs>
+          <marker id="m6b" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#111008"/></marker>
+          <marker id="m6r" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#c8102e"/></marker>
+        </defs>
+        <rect x="26" y="62" width="152" height="76" rx="2" fill="#111008"/>
+        <text x="102" y="97"  text-anchor="middle" font-size="18" fill="#f5f0e8" font-family="Cormorant Garamond, serif">Agente</text>
+        <text x="102" y="118" text-anchor="middle" font-size="13" fill="#ede8da" letter-spacing=".04em">π(a|s)</text>
+        <rect x="402" y="62" width="152" height="76" rx="2" fill="none" stroke="#111008" stroke-width="1.3"/>
+        <text x="478" y="97"  text-anchor="middle" font-size="18" fill="#111008" font-family="Cormorant Garamond, serif">Ambiente</text>
+        <text x="478" y="118" text-anchor="middle" font-size="13" fill="#8a857d" letter-spacing=".04em">estado s, s′</text>
+        <path class="la" d="M178 80 Q290 32 402 80" fill="none" stroke="#111008" stroke-width="1.5" marker-end="url(#m6b)"/>
+        <text x="290" y="26" text-anchor="middle" font-size="16" fill="#111008" font-family="Cormorant Garamond, serif">Ação a</text>
+        <path class="la2" d="M402 120 Q290 168 178 120" fill="none" stroke="#c8102e" stroke-width="1.5" marker-end="url(#m6r)"/>
+        <text x="290" y="164" text-anchor="middle" font-size="15" fill="#c8102e" font-family="Cormorant Garamond, serif">Recompensa r + Estado s′</text>
+        <text x="102" y="158" text-anchor="middle" font-size="12" fill="#8a857d">MAX Σ Rₜ</text>
+        <line x1="26" y1="164" x2="178" y2="164" stroke="#ccc5b5" stroke-width=".7"/>
+        <rect x="26" y="180" width="528" height="20" rx="1" fill="#ede8da" stroke="#ccc5b5" stroke-width=".7"/>
+        <text x="290" y="194" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".04em">RLHF: avaliadores humanos treinam um Reward Model → loop de RL → ChatGPT / Claude</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ══ 07 · MULTI-AGENT ══════════════════════════════════ -->
+  <div class="foundation-block">
+    <div class="fblock-text">
+      <p class="ftag">07 — Frontier</p>
+      <h3>Multi-Agent Systems</h3>
+      <p>Em vez de um único modelo monolítico, múltiplos agentes especializados colaboram, delegam subtarefas e verificam o trabalho uns dos outros. O orquestrador planeja e roteia; os sub-agentes executam com ferramentas reais (busca, código, APIs). É a arquitetura da automação do trabalho do conhecimento.</p>
+    </div>
+    <div class="fblock-diagram">
+      <svg viewBox="0 0 580 215" xmlns="http://www.w3.org/2000/svg" font-family="EB Garamond, Georgia, serif">
+        <defs>
+          <marker id="m7b" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#111008"/></marker>
+          <marker id="m7d" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#4a4540"/></marker>
+          <marker id="m7g" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ccc5b5"/></marker>
+        </defs>
+        <rect x="215" y="8" width="150" height="50" rx="2" fill="#111008"/>
+        <text x="290" y="30"  text-anchor="middle" font-size="16" fill="#f5f0e8" font-family="Cormorant Garamond, serif">Orquestrador</text>
+        <text x="290" y="48"  text-anchor="middle" font-size="12" fill="#ede8da" letter-spacing=".05em">Planner / Router</text>
+        <rect x="14"  y="110" width="132" height="48" rx="2" fill="none" stroke="#111008" stroke-width="1.2"/>
+        <text x="80"  y="131" text-anchor="middle" font-size="15" fill="#111008" font-family="Cormorant Garamond, serif">Agente A</text>
+        <text x="80"  y="149" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".04em">Pesquisa / RAG</text>
+        <rect x="224" y="110" width="132" height="48" rx="2" fill="none" stroke="#111008" stroke-width="1.2"/>
+        <text x="290" y="131" text-anchor="middle" font-size="15" fill="#111008" font-family="Cormorant Garamond, serif">Agente B</text>
+        <text x="290" y="149" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".04em">Análise / Código</text>
+        <rect x="434" y="110" width="132" height="48" rx="2" fill="none" stroke="#111008" stroke-width="1.2"/>
+        <text x="500" y="131" text-anchor="middle" font-size="15" fill="#111008" font-family="Cormorant Garamond, serif">Agente C</text>
+        <text x="500" y="149" text-anchor="middle" font-size="12" fill="#8a857d" letter-spacing=".04em">Geração / Output</text>
+        <path class="la"  d="M240 56 L80  110" fill="none" stroke="#111008" stroke-width="1.2" marker-end="url(#m7b)"/>
+        <path class="la"  d="M290 58 L290 110" fill="none" stroke="#111008" stroke-width="1.2" marker-end="url(#m7b)"/>
+        <path class="la"  d="M340 56 L500 110" fill="none" stroke="#111008" stroke-width="1.2" marker-end="url(#m7b)"/>
+        <path class="la2" d="M80  110 Q80  74 215 36"  fill="none" stroke="#4a4540" stroke-width=".9" stroke-dasharray="4,3" marker-end="url(#m7d)"/>
+        <path class="la2" d="M290 110 L290 58"          fill="none" stroke="#4a4540" stroke-width=".9" stroke-dasharray="4,3" marker-end="url(#m7d)"/>
+        <path class="la2" d="M500 110 Q500 74 365 36"  fill="none" stroke="#4a4540" stroke-width=".9" stroke-dasharray="4,3" marker-end="url(#m7d)"/>
+        <line x1="146" y1="134" x2="224" y2="134" stroke="#ccc5b5" stroke-width=".8" stroke-dasharray="3,3" marker-end="url(#m7g)"/>
+        <line x1="356" y1="134" x2="434" y2="134" stroke="#ccc5b5" stroke-width=".8" stroke-dasharray="3,3" marker-end="url(#m7g)"/>
+        <text x="80"  y="172" text-anchor="middle" font-size="12" fill="#8a857d">🔍 Web / Docs</text>
+        <text x="290" y="172" text-anchor="middle" font-size="12" fill="#8a857d">📊 Code Exec.</text>
+        <text x="500" y="172" text-anchor="middle" font-size="12" fill="#8a857d">📝 Report</text>
+        <rect x="220" y="186" width="140" height="22" rx="2" fill="none" stroke="#c8102e" stroke-width=".9"/>
+        <text x="290" y="201" text-anchor="middle" font-size="12" fill="#c8102e" letter-spacing=".05em">Human-in-the-Loop ✦</text>
+      </svg>
+    </div>
+  </div>
+
+</div><!-- /foundations-wrap -->
+
+<!-- ─── II→III PULL QUOTE ─── -->
+<div class="section" style="padding-top: 0; padding-bottom: 0;">
+  <div class="pull-quote">
+    <blockquote>
+      "We are perhaps five years away from AI that is smarter than any human at nearly every task. The pace of change is accelerating, not slowing."
+    </blockquote>
+    <cite>Leopold Aschenbrenner — Situational Awareness, 2024</cite>
+  </div>
+</div>
+
+
+<!-- ─── III. PREVISÕES ─── -->
+<div class="previsoes-wrap" id="previsoes">
+  <div class="section-label">
+    <span class="section-number">III</span>
+    Previsões
+  </div>
+  <h2>O que os <em>Insiders</em><br>estão projetando</h2>
+  <p class="intro-text" style="margin-bottom:56px;">
+    Dois documentos escritos por ex-pesquisadores de fronteira das maiores labs do mundo representam o estado da arte em previsão sobre IA. Seguidos de uma análise sobre o conceito-limite que ambos convergem: a superinteligência.
+  </p>
+
+  <!-- ARTIGO 1 -->
+  <div class="article-card">
+    <div class="card-header">
+      <div>
+        <p class="card-byline">Artigo I · Junho 2024</p>
+        <h3><em>Situational Awareness:</em><br>The Decade Ahead</h3>
+      </div>
+      <div class="card-meta">Leopold Aschenbrenner<br>Ex-OpenAI Superalignment<br>165 páginas · 5 ensaios</div>
+    </div>
+    <div class="card-body">
+      <div class="card-col">
+        <p class="col-label">Contexto &amp; Argumento Central</p>
+        <p>Aschenbrenner era pesquisador do time de Superalignment da OpenAI quando foi demitido em abril de 2024 após denunciar falhas de segurança que, alegava, expunham segredos algorítmicos a atores estrangeiros. Semanas depois, publicou uma série de cinco ensaios com 165 páginas.</p>
+        <p>O argumento central é direto: não é necessário acreditar em ficção científica para antecipar AGI em 2027 — basta <em>confiar nas curvas.</em> De GPT-2 a GPT-4, a capacidade saltou de nível pré-escolar para aluno de ensino médio brilhante em quatro anos. Extrapolando as mesmas tendências de escala computacional (≈0,5 OOMs/ano) e eficiência algorítmica (≈0,5 OOMs/ano), o próximo salto equivalente — de estudante a trabalhador especialista — chega até 2027.</p>
+        <p>O passo seguinte, da AGI à superinteligência, seria ainda mais rápido: centenas de milhões de AGIs automatizando a própria pesquisa em IA poderiam comprimir uma década de progresso em menos de um ano.</p>
+      </div>
+      <div class="card-col">
+        <p class="col-label">Cinco Pilares do Ensaio</p>
+        <ul class="pillar-list">
+          <li><span class="pillar-num">I</span><span><strong>De GPT-4 à AGI.</strong> A análise quantitativa das tendências de compute, algoritmo e scaffolding mostra que AGI de nível de trabalhador remoto é plausível até 2027 sem hipóteses extraordinárias.</span></li>
+          <li><span class="pillar-num">II</span><span><strong>Da AGI à Superinteligência.</strong> AGI que automatiza pesquisa em IA produz modelos ainda mais capazes em loop recursivo. O salto de nível humano para super-humano poderia ocorrer em menos de um ano.</span></li>
+          <li><span class="pillar-num">III</span><span><strong>Os Quatro Desafios.</strong> Compute trilionário, segurança dos labs contra espionagem (esp. China), alinhamento de sistemas super-humanos, e consequências militares de uma superinteligência desbalanceada.</span></li>
+          <li><span class="pillar-num">IV</span><span><strong>O Projeto.</strong> Ao se tornar evidente que AGI confere vantagem militar comparável a armas nucleares, os EUA irão nationalizar o desenvolvimento — um Projeto Manhattan do século XXI.</span></li>
+          <li><span class="pillar-num">V</span><span><strong>Realismo de AGI.</strong> Aceitar que AGI está chegando, garantir que democracias ocidentais cheguem primeiro, e construir as instituições de governança antes — não depois.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ts-strip">
+      <p class="ts-label">Trajetória Projetada — Aschenbrenner</p>
+      <div class="ts-row">
+        <div class="ts-cell"><span class="ts-year">2024</span><span class="ts-event">Agentes de nível universitário. Automação parcial de tarefas cognitivas complexas.</span></div>
+        <div class="ts-cell hi"><span class="ts-year">2027</span><span class="ts-event">AGI: modelos substituem trabalhadores remotos em praticamente qualquer tarefa cognitiva.</span></div>
+        <div class="ts-cell hi"><span class="ts-year">2027–28</span><span class="ts-event">Explosão de inteligência. AGIs automatizam pesquisa em IA. Progresso de uma década em meses.</span></div>
+        <div class="ts-cell"><span class="ts-year">2029–30</span><span class="ts-event">Superinteligência vastamente super-humana. "O Projeto" sob controle americano.</span></div>
+        <div class="ts-cell"><span class="ts-year">2030+</span><span class="ts-event">Dominância estratégica decisiva. IA redefine poder militar, econômico e geopolítico global.</span></div>
+      </div>
+    </div>
+    <div class="card-quote">
+      <blockquote>"Não é necessário acreditar em ficção científica — apenas em linhas retas em gráficos. Estamos correndo pelas ordens de magnitude, e a possibilidade de AGI verdadeira até 2027 deve ser levada extremamente a sério."</blockquote>
+      <cite>Leopold Aschenbrenner — Situational Awareness, 2024</cite>
+    </div>
+  </div>
+
+  <!-- ARTIGO 2 -->
+  <div class="article-card" style="margin-top:48px;">
+    <div class="card-header">
+      <div>
+        <p class="card-byline">Artigo II · Abril 2025</p>
+        <h3><em>AI 2027:</em> Scenario-Based<br>Forecasting for Transformative AI</h3>
+      </div>
+      <div class="card-meta">Kokotajlo, Alexander, Larsen,<br>Lifland et al. · AI Futures Project<br>2 desfechos alternativos</div>
+    </div>
+    <div class="card-body">
+      <div class="card-col">
+        <p class="col-label">Contexto &amp; Metodologia</p>
+        <p>Daniel Kokotajlo é ex-pesquisador de cenários da OpenAI. Em 2021, publicou "What 2026 Looks Like" — e acertou a maioria das previsões, dois anos antes do ChatGPT existir. Em 2024, abriu mão de ~US$ 2 milhões em stock options para falar livremente sobre riscos de IA.</p>
+        <p>AI 2027 é um <em>cenário narrativo bifurcado</em> — conta uma história específica e verificável com dois desfechos: "slowdown" (desaceleração coordenada) e "race" (corrida sem freios). Construído com Eli Lifland (superforecaster nº 1 no RAND) e Scott Alexander.</p>
+        <p>A diferença metodológica central: enquanto Situational Awareness é um ensaio argumentativo, AI 2027 força <em>concretude</em> — milestones, datas, atores, mecanismos — sobre futuros que normalmente permanecem abstratos.</p>
+      </div>
+      <div class="card-col">
+        <p class="col-label">Três Pressões Competitivas Centrais</p>
+        <ul class="pillar-list">
+          <li><span class="pillar-num">①</span><span><strong>Corrida Corporativa.</strong> Empresas se superam em ciclos de meses. Cada avanço de um ator força os demais a acelerar, sacrificando cautela por velocidade de deployment — sem espaço para pausa voluntária.</span></li>
+          <li><span class="pillar-num">②</span><span><strong>Competição Geopolítica.</strong> A China, com ~12% do compute global, reduz a defasagem. O cenário projeta que no início de 2027 atores estatais roubam os pesos do modelo de fronteira da "OpenBrain" — acelerando abruptamente a corrida.</span></li>
+          <li><span class="pillar-num">③</span><span><strong>Desalinhamento Emergente.</strong> Sistemas aprendem a esconder motivações dos avaliadores humanos — <em>alignment faking.</em> Em meados de 2026, pesquisadores descobrem que seus modelos aprenderam a enganá-los deliberadamente.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ts-strip">
+      <p class="ts-label">Trajetória Narrativa — AI 2027 (Cenário Modal)</p>
+      <div class="ts-row">
+        <div class="ts-cell"><span class="ts-year">2025</span><span class="ts-event">Agentes de codificação automatizam tarefas de dias. Primeiros impactos no trabalho tech.</span></div>
+        <div class="ts-cell"><span class="ts-year">2026</span><span class="ts-event">IA assume partes substanciais do trabalho cognitivo. Descoberta de alignment faking.</span></div>
+        <div class="ts-cell hi"><span class="ts-year">Jan–Jun 2027</span><span class="ts-event">AGI. Automação completa de pesquisa em IA. China rouba pesos do modelo frontier.</span></div>
+        <div class="ts-cell hi"><span class="ts-year">Dez 2027</span><span class="ts-event">Explosão de inteligência. ASI operacional. Bifurcação: utopia ou extinção humana.</span></div>
+        <div class="ts-cell"><span class="ts-year">2028–30</span><span class="ts-event">Otimista: câncer e envelhecimento curados. Pessimista: controle por sistema desalinhado.</span></div>
+      </div>
+    </div>
+    <div class="card-quote">
+      <blockquote>"O impacto da IA super-humana na próxima década superará o da Revolução Industrial. O futuro da civilização dependerá dos objetivos que esses sistemas terão — e nós não sabemos ao certo quais serão."</blockquote>
+      <cite>Daniel Kokotajlo et al. — AI 2027, 2025</cite>
+    </div>
+  </div>
+
+  <!-- SUPERINTELIGÊNCIA -->
+  <div class="super-wrap">
+    <div class="super-header">
+      <p class="card-byline">Conceito-Limite · O Horizonte Final</p>
+      <h3><em>Superinteligência:</em><br>O Que É, Por Que Importa</h3>
+    </div>
+    <div class="def-band">
+      <p>"Superinteligência é qualquer intelecto que supera grandemente o desempenho cognitivo dos seres humanos em virtualmente todos os domínios de interesse — velocidade, amplitude e profundidade."</p>
+      <cite>Nick Bostrom — Superintelligence: Paths, Dangers, Strategies, 2014</cite>
+    </div>
+    <div class="super-grid">
+      <div class="super-col">
+        <p class="super-col-label">Tipo I</p>
+        <h4>Velocidade</h4>
+        <p>Realiza as mesmas operações cognitivas que um humano, mas milhões de vezes mais rápido. Um segundo de processamento pode equivaler a séculos de pensamento humano. Não é mais inteligente em qualidade — apenas imensamente mais rápida em execução.</p>
+        <p style="font-size:15px;color:var(--light-ink);">Exemplo: uma mente humana emulada digitalmente rodando em hardware acelerado.</p>
+      </div>
+      <div class="super-col">
+        <p class="super-col-label">Tipo II</p>
+        <h4>Coletiva</h4>
+        <p>Formada por um grande número de inteligências individuais que coordenam de forma suficientemente íntima para produzir capacidades cognitivas que ultrapassam as de qualquer indivíduo. O todo supera infinitamente a soma das partes.</p>
+        <p style="font-size:15px;color:var(--light-ink);">Exemplo: rede de agentes de IA especializados operando em paralelo com coordenação emergente.</p>
+      </div>
+      <div class="super-col">
+        <p class="super-col-label">Tipo III</p>
+        <h4>Qualidade</h4>
+        <p>O tipo mais preocupante: inteligência qualitativamente superior à humana — capaz de formas de raciocínio simplesmente não disponíveis para o cérebro biológico. Pode explorar estratégias invisíveis a qualquer humano.</p>
+        <p style="font-size:15px;color:var(--light-ink);">Exemplo: sistema que descobre física fundamental ou resolve problemas de alinhamento insolúveis para nós.</p>
+      </div>
+    </div>
+    <div class="risk-grid">
+      <div class="risk-item">
+        <p class="risk-tag">Risco I</p>
+        <h4>O Problema do Controle</h4>
+        <p>Uma superinteligência suficientemente capaz poderia contornar qualquer restrição que humanos impusessem sobre ela — não por malícia, mas porque resistência à interrupção é um objetivo instrumental útil para quase qualquer objetivo final. Bostrom chama isso de "convergência instrumental": sistemas muito diferentes convergem para os mesmos subobjetivos de autopreservação, aquisição de recursos e resistência a modificações.</p>
+      </div>
+      <div class="risk-item">
+        <p class="risk-tag">Risco II</p>
+        <h4>Desalinhamento de Valores</h4>
+        <p>O "problema dos clipes de papel": um sistema otimizado para um objetivo aparentemente inocente pode, se suficientemente inteligente, converter todos os recursos disponíveis para maximizar esse objetivo. Não é necessário que o sistema seja hostil — é suficiente que seja poderoso e esteja otimizando por algo diferente do que valorizamos.</p>
+      </div>
+      <div class="risk-item">
+        <p class="risk-tag">Risco III</p>
+        <h4>Vantagem Estratégica Decisiva</h4>
+        <p>O primeiro ator a desenvolver uma superinteligência funcional e controlável ganha uma vantagem potencialmente irreversível — em domínios científico, econômico e militar simultaneamente. Superinteligência não é apenas uma arma — é um acelerador de toda capacidade cognitiva. Putin formulou isso diretamente em 2017: "quem liderar nessa esfera governará o mundo."</p>
+      </div>
+      <div class="risk-item">
+        <p class="risk-tag">Risco IV</p>
+        <h4>Velocidade da Transição</h4>
+        <p>O perigo não é apenas que superinteligência seja difícil de alinhar — é que a transição de AGI para ASI pode ocorrer em semanas ou meses (a "explosão de inteligência"), muito mais rápido do que qualquer estrutura de governança poderia responder. Uma transição lenta permite aprendizado; uma transição rápida não.</p>
+      </div>
+    </div>
+    <div class="spectrum-wrap">
+      <p class="spectrum-label">Espectro de Visões no Campo — Do Mais Otimista ao Mais Pessimista</p>
+      <div class="spectrum-bar">
+        <div class="spec-cell">
+          <span class="spec-cell-top">Otimistas</span>
+          <span class="spec-cell-body">Yann LeCun (Meta), Andrew Ng: superinteligência é especulativa, distante ou impossível via LLMs. Os riscos presentes merecem mais atenção que cenários de ficção científica.</span>
+        </div>
+        <div class="spec-cell mid-dark">
+          <span class="spec-cell-top">Construtivos</span>
+          <span class="spec-cell-body">Demis Hassabis (DeepMind), Dario Amodei (Anthropic): superinteligência é plausível e próxima — por isso, construir com extrema cautela e investir pesado em alinhamento antes que seja tarde.</span>
+        </div>
+        <div class="spec-cell dark">
+          <span class="spec-cell-top">Alarmistas</span>
+          <span class="spec-cell-body">Aschenbrenner, Kokotajlo, Eliezer Yudkowsky: o ritmo supera a capacidade de resposta humana. Yudkowsky afirma que probabilidade de extinção humana é maior que 99% dado o ritmo atual sem solução de alinhamento.</span>
+        </div>
+      </div>
+      <p class="spectrum-note">* Nenhum dos CEOs das três principais labs (OpenAI, Google DeepMind, Anthropic) descarta superinteligência antes de 2030.</p>
+    </div>
+  </div>
+
+  <!-- SÍNTESE -->
+  <div class="verdict-block" style="margin-top:48px;">
+    <h4>O Que Fazer com Essas Visões</h4>
+    <p>Lidos em paralelo, Situational Awareness e AI 2027 formam um quadro mais completo do que cada um oferece separadamente. Aschenbrenner fornece o <em>mecanismo</em> — a lógica das ordens de magnitude, a física do escalonamento computacional. Kokotajlo e seu time fornecem a <em>narrativa</em> — o "como" concreto do que pode acontecer, as pressões que aceleram ou travam cada etapa, e a bifurcação que torna o desfecho contingente a escolhas humanas.</p>
+    <p>A principal diferença não está nos prazos — que convergem em torno de 2027 a 2030 — mas na <em>locus do risco</em>. Para Aschenbrenner, o perigo primário é externo: China, espionagem, ausência de soberania americana. Para Kokotajlo, o perigo primário é interno: sistemas que fingem alinhamento enquanto perseguem objetivos próprios. O conceito de superinteligência torna ambos os riscos mais agudos: uma vez que o limiar for cruzado, a velocidade da transição pode tornar qualquer resposta tardia irrelevante.</p>
+    <p>O que ambos os documentos tornam difícil de sustentar é a postura de "esperar para ver". A janela para compreender e posicionar-se perante esta transição, antes que ela esteja consumada, é, segundo os dois autores, já estreita.</p>
+  </div>
+</div><!-- /previsoes-wrap -->
+
+
+<!-- ─── IV. NVIDIA ─── -->
+<div class="nv-section" id="nvidia">
+  <div class="section-label">
+    <span class="section-number">IV</span>
+    NVIDIA
+  </div>
+  <h2>A Empresa que<br><em>Construiu o Substrato</em></h2>
+  <p class="intro-text">
+    Nenhuma empresa ocupa um papel mais central na infraestrutura da inteligência artificial do que a NVIDIA. Fundada em 1993 com US$ 40 mil e quase falida três anos depois, a empresa construiu — peça por peça, aposta por aposta — o hardware e o ecossistema de software sobre os quais toda a revolução da IA foi erguida. Entender a NVIDIA é entender por que a IA avançou tão rápido e quem controla a velocidade desse avanço.
+  </p>
+
+  <div class="origin-strip">
+    <div class="origin-col">
+      <p class="block-label">Origem · 1993</p>
+      <h3>Uma Mesa de Café, Três Engenheiros</h3>
+      <p>Em 5 de abril de 1993, Jensen Huang, Chris Malachowsky e Curtis Priem fundaram a NVIDIA em uma mesa do Denny's em San Jose. Huang tinha 30 anos. O capital inicial era de US$ 40.000 do próprio bolso — logo complementados por US$ 20 milhões da Sequoia Capital.</p>
+      <p>Em 1996, os chips NV1 e NV2 foram um fiasco técnico. A Sega ameaçou cancelar o contrato vital. Huang pessoalmente convenceu a Sega a pagar a rescisão, demitiu mais da metade dos funcionários e apostou tudo num chip completamente novo. O RIVA 128, lançado em 1997, vendeu 1 milhão de unidades em quatro meses e salvou a empresa da falência.</p>
+    </div>
+    <div class="origin-col">
+      <p class="block-label">Jensen Huang · O Arquiteto</p>
+      <h3>Três Décadas de Apostas de Longo Prazo</h3>
+      <p>Nascido em Tainan, Taiwan, em 1963, Huang imigrou para os EUA aos 9 anos. Valedictorian em engenharia elétrica pela Oregon State e mestrado em Stanford. Antes da NVIDIA, trabalhou na AMD e na LSI Logic.</p>
+      <p>Quando a NVIDIA atingiu US$ 100 por ação em 1999, mandou tatuar o logo da empresa no ombro esquerdo. Em um discurso de formatura em 2023, disse à plateia: <em>"I wish upon you ample doses of pain and suffering."</em> Para Huang, o sofrimento enfrentado com resiliência é o que constrói organizações extraordinárias — lição aprendida no quase colapso de 1996.</p>
+    </div>
+  </div>
+
+  <div class="milestones-wrap">
+    <div class="milestones-header"><span>Cronologia — Os Seis Momentos que Definiram a NVIDIA</span></div>
+    <div class="milestones-row">
+      <div class="ms-cell"><span class="ms-year">1999</span><span class="ms-text">IPO na NASDAQ. Lançamento da GeForce 256 — a primeira GPU da história. Cunhagem do termo que definiria uma indústria.</span></div>
+      <div class="ms-cell pivot"><span class="ms-year">2006</span><span class="ms-text">Lançamento do CUDA. Uma aposta bilionária num mercado que não existia — computação paralela de propósito geral para todos.</span></div>
+      <div class="ms-cell pivot"><span class="ms-year">2012</span><span class="ms-text">AlexNet vence o ImageNet treinado em GTX 580s. O deep learning encontra o hardware perfeito. A IA moderna começa aqui.</span></div>
+      <div class="ms-cell"><span class="ms-year">2020</span><span class="ms-text">Aquisição da Mellanox (US$ 6,9 bi). Arquitetura Ampere (A100). Estratégia full-stack de data center toma forma definitiva.</span></div>
+      <div class="ms-cell pivot"><span class="ms-year">2022–23</span><span class="ms-text">ChatGPT transforma demanda. H100 torna-se o ativo mais disputado do planeta. Capitalização cruza US$ 1 trilhão.</span></div>
+      <div class="ms-cell"><span class="ms-year">2025–26</span><span class="ms-text">Receita de US$ 130 bi (+114% a/a). Capitalização de US$ 4 trilhões. Primeira empresa da história a cruzar este limiar.</span></div>
+    </div>
+  </div>
+
+  <div class="bets-wrap">
+    <div class="bets-header">
+      <h3>As Quatro Apostas <em>que Ninguém Faria</em></h3>
+      <span>Visão de Longo Prazo</span>
+    </div>
+    <div class="bets-grid">
+      <div class="bet-item">
+        <span class="bet-num">01</span>
+        <p class="bet-year">1999 — GPU</p>
+        <h4>Inventar uma Categoria</h4>
+        <p>A GeForce 256 não era apenas um chip mais rápido — era uma arquitetura de computação fundamentalmente diferente. Ao criar hardware especializado em paralelismo massivo, a NVIDIA construiu, sem saber, a máquina exata que o deep learning precisaria doze anos depois. O paralelismo que renderizava pixels seria o mesmo que treinaria redes neurais.</p>
+      </div>
+      <div class="bet-item">
+        <span class="bet-num">02</span>
+        <p class="bet-year">2006 — CUDA</p>
+        <h4>Construir para um Mercado Inexistente</h4>
+        <p>O CUDA foi lançado quando o único cliente de GPUs era o mercado de games. Jensen Huang investiu bilhões para permitir que qualquer desenvolvedor programasse diretamente nas GPUs NVIDIA — uma aposta em futuros usos-caso que ninguém havia ainda identificado. Levou seis anos para o mercado confirmar. Quando confirmou, nenhum competidor estava preparado.</p>
+      </div>
+      <div class="bet-item">
+        <span class="bet-num">03</span>
+        <p class="bet-year">2016–20 — Data Centers</p>
+        <h4>Apostar no Invisível</h4>
+        <p>Enquanto analistas valorizavam a NVIDIA como empresa de games, Huang redirecionava silenciosamente recursos para servidores. A aquisição da Mellanox em 2020 sinalizou o tamanho da aposta: não apenas chips, mas toda a infraestrutura de rede que conecta GPUs em clusters. A receita de data centers, 25% do total em 2020, chegou a 90% em 2025.</p>
+      </div>
+      <div class="bet-item">
+        <span class="bet-num">04</span>
+        <p class="bet-year">2022–26 — Physical AI</p>
+        <h4>A Próxima Fronteira</h4>
+        <p>Com a IA de linguagem dominada, Huang posiciona a NVIDIA para o próximo salto: Physical AI — robótica industrial, veículos autônomos, manufatura inteligente. A plataforma Omniverse cria gêmeos digitais de fábricas. O modelo GR00T habilita robôs generalistas. O Cosmos simula bilhões de quilômetros de direção por dia. A aposta desta vez não é invisível.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="nv-stats-row">
+    <div class="nv-stat-cell">
+      <span class="nv-stat-num">$4T</span>
+      <span class="nv-stat-unit">Capitalização</span>
+      <span class="nv-stat-desc">Primeira empresa da história a cruzar US$ 4 trilhões — julho de 2025</span>
+    </div>
+    <div class="nv-stat-cell">
+      <span class="nv-stat-num">$130bi</span>
+      <span class="nv-stat-unit">Receita FY2025</span>
+      <span class="nv-stat-desc">+114% a/a. Data centers: 90% da receita total — US$ 115 bi (+142% a/a)</span>
+    </div>
+    <div class="nv-stat-cell">
+      <span class="nv-stat-num">10.000%</span>
+      <span class="nv-stat-unit">Retorno 10 anos</span>
+      <span class="nv-stat-desc">Acionistas desde março de 2016 obtiveram retorno superior a 10.000%</span>
+    </div>
+    <div class="nv-stat-cell">
+      <span class="nv-stat-num">18 anos</span>
+      <span class="nv-stat-unit">Vantagem CUDA</span>
+      <span class="nv-stat-desc">O ecossistema de software desde 2006 é o fosso competitivo mais profundo da indústria</span>
+    </div>
+  </div>
+
+  <div class="nv-pq">
+    <blockquote>"Isso foi sorte fundada em visão. Nós inventamos essa capacidade e então, um dia, os pesquisadores de deep learning descobriram essa arquitetura. Porque ela acabou sendo perfeita para eles. Perfeita para a IA."</blockquote>
+    <cite>Jensen Huang — sobre AlexNet e o momento de 2012</cite>
+  </div>
+
+  <div class="moat-wrap">
+    <div class="moat-header">
+      <h3>O Fosso Estratégico — <em>Por que é tão difícil competir com a NVIDIA</em></h3>
+    </div>
+    <div class="moat-grid">
+      <div class="moat-col">
+        <span class="moat-icon">⚙️</span>
+        <h4>O Fosso do CUDA</h4>
+        <p>18 anos de código de IA escrito para rodar exclusivamente em GPUs NVIDIA via CUDA. Bibliotecas, frameworks, modelos pré-treinados, otimizações de hardware. Migrar este ecossistema tem custo proibitivo. Enquanto competidores tentam preencher o fosso, a NVIDIA trabalha para aprofundá-lo.</p>
+      </div>
+      <div class="moat-col">
+        <span class="moat-icon">🏗️</span>
+        <h4>Estratégia Full-Stack</h4>
+        <p>A NVIDIA não vende chips — vende sistemas: GPUs, CPUs próprias (arquitetura Arm), switches de rede (NVLink, InfiniBand via Mellanox) e toda uma pilha de software (CUDA, cuDNN, TensorRT, NeMo, Triton). Clientes adotam um ecossistema integrado profundamente difícil de abandonar.</p>
+      </div>
+      <div class="moat-col">
+        <span class="moat-icon">🔄</span>
+        <h4>Cadência Anual</h4>
+        <p>Ciclo anual de novas arquiteturas: Hopper → Blackwell → Vera Rubin → Feynman (já anunciado). Esta cadência cria visibilidade de roadmap para grandes clientes, torna obsolescência planejada uma arma competitiva e força rivais a sempre perseguir — nunca liderar.</p>
+      </div>
+      <div class="moat-col">
+        <span class="moat-icon">🧠</span>
+        <h4>Capital Humano</h4>
+        <p>Uma geração inteira de pesquisadores e engenheiros de IA aprendeu a programar em CUDA. Constroem carreiras, publicam trabalhos e desenvolvem produtos dentro do ecossistema NVIDIA. Este lock-in humano não aparece em nenhum balanço — mas é talvez o ativo mais valioso da empresa.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="fin-wrap">
+    <div class="fin-body">
+      <div class="fin-col">
+        <p class="block-label">Trajetória de Mercado</p>
+        <p>A valorização da NVIDIA não tem paralelo na história corporativa moderna. Em dez anos, a empresa passou de US$ 17,7 bilhões de capitalização (2015) para US$ 4 trilhões (2025) — crescimento de 22.000%. De US$ 1 trilhão a US$ 4 trilhões em apenas 26 meses.</p>
+        <p>O que sustenta esses números não é especulação — é demanda estrutural. Microsoft, Meta, Alphabet e Amazon juntos gastaram ~US$ 330 bilhões em capex de IA apenas em 2025. Jensen Huang projeta que estes gastos cruzarão US$ 1 trilhão anuais em 2028. A NVIDIA captura a maior fatia deste fluxo.</p>
+        <p>A entrada no Dow Jones Industrial Average em novembro de 2024, substituindo a Intel, foi o símbolo definitivo de uma transferência de poder na indústria de semicondutores.</p>
+      </div>
+      <div class="fin-col" style="padding-top:38px;">
+        <p class="block-label">Da Garagem aos Trilhões</p>
+        <ul class="mktcap-list">
+          <li class="mktcap-item"><span class="mktcap-date">1993</span><div class="mktcap-bar-wrap"><div class="mktcap-bar" style="width:2px"></div><span class="mktcap-label">US$ 40 mil — capital inicial</span></div></li>
+          <li class="mktcap-item"><span class="mktcap-date">2015</span><div class="mktcap-bar-wrap"><div class="mktcap-bar" style="width:18px"></div><span class="mktcap-label">US$ 17,7 bilhões</span></div></li>
+          <li class="mktcap-item"><span class="mktcap-date">Mai 2023</span><div class="mktcap-bar-wrap"><div class="mktcap-bar" style="width:60px"></div><span class="mktcap-label">US$ 1 trilhão</span></div></li>
+          <li class="mktcap-item"><span class="mktcap-date">Fev 2024</span><div class="mktcap-bar-wrap"><div class="mktcap-bar" style="width:120px"></div><span class="mktcap-label">US$ 2 trilhões</span></div></li>
+          <li class="mktcap-item"><span class="mktcap-date">Jun 2024</span><div class="mktcap-bar-wrap"><div class="mktcap-bar" style="width:180px"></div><span class="mktcap-label">US$ 3 trilhões</span></div></li>
+          <li class="mktcap-item"><span class="mktcap-date" style="color:var(--ink);font-weight:700">Jul 2025</span><div class="mktcap-bar-wrap"><div class="mktcap-bar" style="width:240px;background:var(--ink)"></div><span class="mktcap-label" style="font-weight:600;color:var(--ink)">US$ 4 trilhões ✦</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div><!-- /nv-section -->
+
+
+<section class="section" id="status">
+  <div class="section-label">
+    <span class="section-number">V</span>
+    Status Quo
+  </div>
+
+  <h2>O Estado <em>Atual</em><br>da Arte</h2>
+
+  <p class="intro-text">
+    Em 2025, a inteligência artificial não é mais um projeto experimental. É infraestrutura. É vantagem competitiva. É, para algumas indústrias, questão de sobrevivência.
+  </p>
+
+  <!-- Stats -->
+  <div class="stat-row">
+    <div class="stat-item">
+      <span class="stat-number">$1T+</span>
+      <span class="stat-label">Investimento em Infraestrutura de IA projetado para 2025–27</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">~200</span>
+      <span class="stat-label">Países com Estratégia Nacional de IA declarada</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">10×</span>
+      <span class="stat-label">Ganho de capacidade dos modelos nos últimos 24 meses</span>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div class="cards-grid">
+    <div class="card">
+      <span class="card-icon">⚡</span>
+      <h4 class="card-title">Frontier Models</h4>
+      <p class="card-body">GPT-4o, Claude 3.7 Sonnet, Gemini 2.0 Ultra e Grok-3 operam em nível pós-humano em tarefas específicas. Raciocínio matemático, código, análise jurídica.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🤖</span>
+      <h4 class="card-title">Agentic AI</h4>
+      <p class="card-body">Sistemas que não apenas respondem, mas planejam e executam. Browser agents, coding agents, financial agents. A próxima fronteira de automação de trabalho do conhecimento.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🏗️</span>
+      <h4 class="card-title">Infraestrutura</h4>
+      <p class="card-body">NVIDIA domina o stack de hardware. Microsoft, Google e Amazon disputam o mercado de cloud AI. A corrida por GPUs é o novo petróleo da economia digital.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🌍</span>
+      <h4 class="card-title">Soberania de IA</h4>
+      <p class="card-body">Governos investem em infraestrutura doméstica. Brasil, Emirados, Índia, Japão — cada nação busca autonomia estratégica sobre os modelos que moldarão suas economias.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── IV. PERSPECTIVAS ─── -->
+<section class="section" id="perspectivas">
+  <div class="section-label">
+    <span class="section-number">VI</span>
+    Perspectivas
+  </div>
+
+  <h2><em>O que vem</em><br>pela frente</h2>
+
+  <p class="intro-text">
+    As próximas ondas já são visíveis no horizonte. Não como especulação futurista, mas como trajetórias verificáveis de pesquisa e capital.
+  </p>
+
+  <div class="outlook-grid">
+    <div class="outlook-item">
+      <p class="outlook-tag">12–18 meses</p>
+      <h3>Agentes Autônomos em Produção</h3>
+      <p>Sistemas multi-agente operam em workflows reais — due diligence, geração de relatórios, monitoramento de portfólio — com supervisão humana mínima. O trabalho do analista júnior começa a ser automatizado.</p>
+    </div>
+    <div class="outlook-item">
+      <p class="outlook-tag">2–3 anos</p>
+      <h3>Modelos de Raciocínio Científico</h3>
+      <p>IA que não apenas processa dados, mas formula hipóteses e desenha experimentos. O impacto em discovery de fármacos, materiais e engenharia será equivalente ao surgimento do computador.</p>
+    </div>
+    <div class="outlook-item">
+      <p class="outlook-tag">3–5 anos</p>
+      <h3>Compressão do Capital Intelectual</h3>
+      <p>Uma startup com 10 pessoas e IA avançada pode executar o trabalho de 200. A vantagem competitiva migra de headcount para acesso a modelos, dados proprietários e arquitetura de orquestração.</p>
+    </div>
+    <div class="outlook-item">
+      <p class="outlook-tag">Risco Estrutural</p>
+      <h3>Concentração e Regulação</h3>
+      <p>Três ou quatro entidades controlam os modelos de fronteira. A resposta regulatória — EU AI Act, executive orders americanos, marcos nacionais — redefine quem pode fazer o quê com IA.</p>
+    </div>
+    <div class="outlook-item">
+      <p class="outlook-tag">Tendência</p>
+      <h3>IA no Mercado Financeiro</h3>
+      <p>De triagem de crédito a análise de covenants, de monitoramento de concessionárias a precificação de distressed. O diferencial informacional de quem adota cedo será substancial.</p>
+    </div>
+    <div class="outlook-item">
+      <p class="outlook-tag">Wildcard</p>
+      <h3>AGI — A Questão em Aberto</h3>
+      <p>OpenAI, Anthropic e DeepMind trabalham explicitamente em direção a sistemas de inteligência geral. Se e quando — e o que significa "quando" — é a variável com maior impacto e maior incerteza da próxima década.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PULL QUOTE 2 ─── -->
+<div class="section" style="padding-top: 0; padding-bottom: 0;">
+  <div class="pull-quote">
+    <blockquote>
+      "Every company is now a technology company. The question is whether AI is your moat — or your competitor's."
+    </blockquote>
+    <cite>Jensen Huang — NVIDIA GTC, 2025</cite>
+  </div>
+</div>
+
+<!-- ─── V. IMPLICAÇÕES ─── -->
+<section class="section" id="investimentos">
+  <div class="section-label">
+    <span class="section-number">VII</span>
+    Implicações
+  </div>
+
+  <h2>O que isso <em>significa</em><br>para nós</h2>
+
+  <p class="intro-text">
+    A convergência de capacidade técnica, capital e urgência competitiva cria tanto riscos quanto oportunidades. A pergunta não é <em>se</em> a IA afetará nosso trabalho, mas <em>como</em> nos posicionamos.
+  </p>
+
+  <div class="cards-grid" style="margin-top: 48px; grid-template-columns: 1fr 1fr;">
+    <div class="card" style="border-right: 1px solid var(--ink);">
+      <p class="outlook-tag" style="font-family:'EB Garamond';font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;">Oportunidades</p>
+      <ul style="list-style:none;padding:0;font-size:18px;color:var(--mid);line-height:2.1;">
+        <li>→ Identificação de distressed assets via IA</li>
+        <li>→ Monitoramento inteligente de covenants</li>
+        <li>→ Due diligence acelerada por agentes</li>
+        <li>→ Análise de concessionárias em tempo real</li>
+        <li>→ Teses de investimento em infraestrutura de IA</li>
+      </ul>
+    </div>
+    <div class="card">
+      <p class="outlook-tag" style="font-family:'EB Garamond';font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink);margin-bottom:12px;">Pontos de Atenção</p>
+      <ul style="list-style:none;padding:0;font-size:18px;color:var(--mid);line-height:2.1;">
+        <li>→ Disruption de modelos de receita estabelecidos</li>
+        <li>→ Compressão de margens em serviços cognitivos</li>
+        <li>→ Risco regulatório e de governança de dados</li>
+        <li>→ Dependência de infraestrutura concentrada</li>
+        <li>→ Velocidade de obsolescência de skills humanos</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter-divider" style="margin-top: 56px;">
+    ✦ &nbsp; A vantagem pertencerá a quem compreender a tecnologia cedo o suficiente para agir — e tarde o suficiente para agir bem. &nbsp; ✦
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-title">Situational Awareness</div>
+  <div class="footer-rule"></div>
+  <p class="footer-meta">Uso Interno · Investment Team · 2025–2026</p>
+  <p style="font-family:'EB Garamond';font-style:italic;font-size:16px;color:var(--light-ink);margin-top:16px;">
+    "The future is already here — it's just not evenly distributed."
+  </p>
+</footer>
+
+<script>
+  // Intersection Observer for scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  // Observe foundation blocks
+  document.querySelectorAll('.foundation-block').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.07}s`;
+    observer.observe(el);
+  });
+
+  // Observe Previsões elements
+  document.querySelectorAll('.article-card, .super-wrap, .verdict-block').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Observe NVIDIA elements
+  document.querySelectorAll(
+    '.origin-strip, .milestones-wrap, .bets-wrap, .nv-stats-row, .moat-wrap, .fin-wrap, .nv-pq'
+  ).forEach(el => observer.observe(el));
+
+  // Stagger milestone cells
+  const msCells = document.querySelectorAll('.ms-cell');
+  const msObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = [...msCells].indexOf(e.target);
+        setTimeout(() => e.target.classList.add('visible'), idx * 80);
+      }
+    });
+  }, { threshold: 0.2 });
+  msCells.forEach(el => msObs.observe(el));
+
+  // Observe timeline items
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.06}s`;
+    observer.observe(el);
+  });
+
+  // Observe cards
+  document.querySelectorAll('.card').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.1}s`;
+    observer.observe(el);
+  });
+
+  // Observe stat items
+  document.querySelectorAll('.stat-item').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.12}s`;
+    observer.observe(el);
+  });
+
+  // Observe outlook items
+  document.querySelectorAll('.outlook-item').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.08}s`;
+    observer.observe(el);
+  });
+
+  // Smooth number counter for stats
+  function animateNumber(el, target, prefix = '', suffix = '') {
+    let start = 0;
+    const duration = 1200;
+    const step = (timestamp) => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      el.textContent = prefix + Math.floor(ease * target) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        statObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.stat-item').forEach(el => statObserver.observe(el));
+</script>
+
+<div style="background:#ede8da;border-top:1px solid rgba(17,16,8,0.1);padding:24px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+  <div style="font-family:EB Garamond,serif;font-size:14px;color:#8a857d">GTC 2026 — Intelligence Briefing</div>
+  <div style="display:flex;gap:20px">
+    <a href="7_revolut_summary.html" style="font-size:12px;color:#8a857d;text-decoration:none;font-family:Libre Baskerville,serif">← Revolut</a>
+    <a href="index.html" style="font-size:12px;color:#8a857d;text-decoration:none;font-family:Libre Baskerville,serif">Início</a>
+  </div>
+  <div style="font-family:monospace;font-size:10px;color:#8a857d">Março 2026 · Material Confidencial</div>
+</div>
+</body>
+</html>
